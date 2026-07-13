@@ -3,9 +3,14 @@
     "capped_chained_attacks": "sum(p^i for i=0..max_extra_attacks)",
     "damage_reduction_stack": "1 - product(1 - reduction_i)",
     "effective_health": "(life + active_barrier + other_absorption) / (1 - applicable_total_damage_reduction)",
+    "expected_conditional_factor": "1 + condition_uptime * (total_factor - 1)",
     "expected_crit_factor": "1 + crit_chance * (crit_multiplier - 1)",
+    "expected_single_hit": "weapon_damage * skill_coefficient * (1 + additive_bonus) * product(expected_independent_factor_i) * expected_crit_factor * expected_vulnerable_factor",
     "expected_vulnerable_factor": "1 + vulnerable_uptime * (vulnerable_multiplier - 1)",
-    "percentage_multiplier_to_factor": "1 + displayed_percent / 100"
+    "panel_weighted_gap": "abs(target_or_cap - current) / abs(target_or_cap) * declared_priority",
+    "percentage_multiplier_to_factor": "1 + displayed_percent / 100",
+    "sustained_dps": "expected_single_hit * expected_attacks_per_cast * casts_per_second * resource_uptime",
+    "theoretical_single_hit": "weapon_damage * skill_coefficient * (1 + additive_bonus) * product(eligible_full_condition_factor_i) * eligible_crit_factor * eligible_vulnerable_factor"
   },
   "known_examples": {
     "waxing_gibbous_expected_attacks": {

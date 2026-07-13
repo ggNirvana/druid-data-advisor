@@ -57,6 +57,7 @@
     }
   ],
   "item_power": 900,
+  "masterworking": null,
   "minimum_confidence": 0.9316,
   "name": "残暴三合金属之戒",
   "ocr_lines": [
@@ -140,5 +141,6 @@
       "panel_text_left": 145
     }
   },
+  "tempering": [],
   "unparsed_lines": []
 }

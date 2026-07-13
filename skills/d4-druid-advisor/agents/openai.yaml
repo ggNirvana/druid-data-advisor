@@ -1,0 +1,4 @@
+interface:
+  display_name: "D4 德鲁伊装备顾问"
+  short_description: "精确比较德鲁伊装备、计算单击伤害并诊断人物面板短板"
+  default_prompt: "Use $d4-druid-advisor to compare these Druid items, calculate expected and ceiling single-hit damage, and diagnose my current character panel."

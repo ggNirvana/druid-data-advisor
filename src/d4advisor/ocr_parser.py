@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import json
 import re
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -20,6 +22,14 @@ class AffixDefinition:
     pattern: re.Pattern[str]
     stat: str
     display_name: str
+    unit: str
+    operator: str
+
+
+@dataclass(frozen=True)
+class RegistryStatDefinition:
+    stat: str
+    aliases: tuple[str, ...]
     unit: str
     operator: str
 
@@ -88,6 +98,61 @@ def _compact(text: str) -> str:
     return re.sub(r"\s+", "", text).replace("［", "[").replace("］", "]")
 
 
+@lru_cache(maxsize=1)
+def _load_registry() -> tuple[RegistryStatDefinition, ...]:
+    path = Path(__file__).resolve().parents[2] / "data" / "reference" / "stat-definitions.json"
+    if not path.exists():
+        return ()
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    return tuple(
+        RegistryStatDefinition(
+            stat=stat,
+            aliases=tuple(_compact(alias) for alias in definition["aliases_zh_cn"]),
+            unit=definition["default_unit"],
+            operator=definition["default_operator"],
+        )
+        for stat, definition in payload.get("stats", {}).items()
+    )
+
+
+def _parse_registry_affix(line: OCRLine) -> dict[str, Any] | None:
+    text = _compact(line.text)
+    match = re.match(
+        r"^(?P<prefix>[+xX×]?)(?P<value>\d+(?:\.\d+)?)(?P<percent>%?)(?:点|级)?(?P<label>.+?)$",
+        text,
+    )
+    if not match:
+        return None
+    label = match.group("label")
+    for definition in _load_registry():
+        if label not in definition.aliases:
+            continue
+        prefix = match.group("prefix")
+        has_percent = bool(match.group("percent"))
+        is_multiplier_prefix = prefix in {"x", "X", "×"}
+        syntax_is_valid = (
+            (definition.operator == "multiply" and is_multiplier_prefix and has_percent)
+            or (
+                definition.operator != "multiply"
+                and not is_multiplier_prefix
+                and has_percent == (definition.unit == "percent")
+            )
+        )
+        if not syntax_is_valid:
+            return None
+        return {
+            "stat": definition.stat,
+            "display_name": label,
+            "value": float(match.group("value")),
+            "unit": "percent" if has_percent else definition.unit,
+            "operator": definition.operator,
+            "is_greater_affix": line.has_greater_affix_marker,
+            "confidence": round(line.confidence, 4),
+            "raw_text": line.text,
+        }
+    return None
+
+
 def _parse_affix(line: OCRLine, patterns: tuple[AffixDefinition, ...]) -> dict[str, Any] | None:
     text = _compact(line.text)
     for definition in patterns:
@@ -118,6 +183,8 @@ def parse_item_lines(lines: list[OCRLine], source_image: str | Path | None = Non
         "greater_affix_count": 0,
         "implicit_affixes": [],
         "affixes": [],
+        "tempering": [],
+        "masterworking": None,
         "power": None,
         "required_level": None,
         "expansion": None,
@@ -150,7 +217,7 @@ def parse_item_lines(lines: list[OCRLine], source_image: str | Path | None = Non
             item["implicit_affixes"].append(implicit)
             continue
 
-        affix = _parse_affix(line, STAT_PATTERNS)
+        affix = _parse_registry_affix(line) or _parse_affix(line, STAT_PATTERNS)
         if affix:
             item["affixes"].append(affix)
             continue
@@ -163,6 +230,27 @@ def parse_item_lines(lines: list[OCRLine], source_image: str | Path | None = Non
         expansion = re.match(r"^[《〈](.+?)[》〉]物品$", text)
         if expansion:
             item["expansion"] = expansion.group(1)
+            continue
+
+        tempering = re.match(r"^回火[:：]?(.+)$", text)
+        if tempering:
+            item["tempering"].append(
+                {
+                    "description": tempering.group(1),
+                    "confidence": round(line.confidence, 4),
+                    "raw_text": line.text,
+                }
+            )
+            continue
+
+        masterworking = re.match(r"^(?:精铸|精工)(?:等级)?[:：]?(\d+)(?:/(\d+))?$", text)
+        if masterworking:
+            item["masterworking"] = {
+                "rank": int(masterworking.group(1)),
+                "max_rank": int(masterworking.group(2)) if masterworking.group(2) else None,
+                "confidence": round(line.confidence, 4),
+                "raw_text": line.text,
+            }
             continue
 
         power = re.match(r"^你的(.+?)(\d+(?:\.\d+)?)(?:\[(\d+(?:\.\d+)?)-(\d+(?:\.\d+)?)\])?。?$", text)

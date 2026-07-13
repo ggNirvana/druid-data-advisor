@@ -11,10 +11,60 @@
       "default_operator": "add",
       "default_unit": "percent"
     },
+    "armor": {
+      "aliases_zh_cn": ["护甲"],
+      "default_operator": "add",
+      "default_unit": "flat"
+    },
+    "attack_speed_bonus": {
+      "aliases_zh_cn": ["攻击速度", "攻速"],
+      "default_operator": "add",
+      "default_unit": "percent"
+    },
+    "crit_chance": {
+      "aliases_zh_cn": ["暴击几率", "暴击率"],
+      "default_operator": "add",
+      "default_unit": "percent"
+    },
+    "critical_damage_multiplier": {
+      "aliases_zh_cn": ["暴击伤害增倍", "暴击伤害增幅"],
+      "default_operator": "multiply",
+      "default_unit": "percent"
+    },
+    "damage_multiplier": {
+      "aliases_zh_cn": ["伤害增倍", "伤害增幅", "所有伤害增倍"],
+      "default_operator": "multiply",
+      "default_unit": "percent"
+    },
+    "lightning_damage_multiplier": {
+      "aliases_zh_cn": ["闪电伤害增倍", "闪电伤害增幅"],
+      "default_operator": "multiply",
+      "default_unit": "percent"
+    },
+    "max_life": {
+      "aliases_zh_cn": ["最大生命", "生命上限"],
+      "default_operator": "add",
+      "default_unit": "flat"
+    },
+    "movement_speed": {
+      "aliases_zh_cn": ["移动速度", "移速"],
+      "default_operator": "add",
+      "default_unit": "percent"
+    },
     "physical_damage_multiplier": {
       "aliases_zh_cn": ["物理伤害增倍", "物理伤害增幅"],
       "default_operator": "multiply",
       "default_unit": "percent"
+    },
+    "resource_generation": {
+      "aliases_zh_cn": ["资源生成", "资源生成量"],
+      "default_operator": "add",
+      "default_unit": "percent"
+    },
+    "shred_ranks": {
+      "aliases_zh_cn": ["利爪", "利爪技能等级"],
+      "default_operator": "add",
+      "default_unit": "ranks"
     },
     "vulnerable_damage_multiplier": {
       "aliases_zh_cn": ["易伤伤害增倍", "易伤伤害增幅"],

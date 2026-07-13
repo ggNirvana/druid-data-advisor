@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import re
 from importlib.metadata import version
 from pathlib import Path
 
@@ -17,10 +18,8 @@ def _box_bounds(box: list[list[float]]) -> tuple[int, int, int, int]:
 
 
 def _looks_like_explicit_affix(text: str) -> bool:
-    return any(
-        marker in text
-        for marker in ("意力", "易伤伤害", "物理伤害", "冷却时间缩减")
-    ) and "所有抗性" not in text
+    compact = re.sub(r"\s+", "", text)
+    return bool(re.match(r"^[+xX×]?\d+(?:\.\d+)?%?(?:点|级)?.+", compact)) and "物品强度" not in compact
 
 
 def _has_greater_affix_marker(image: np.ndarray, box: list[list[float]]) -> bool:

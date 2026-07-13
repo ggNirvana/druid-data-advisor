@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
 from typing import Any
 
+from .advisor_engine import audit_panel, calculate_damage_event, compare_loadouts
 from .calculations import effective_health, expected_chained_attacks, stack_damage_reductions
 from .ocr_engine import recognize_item_image
 from .ocr_parser import parse_item_lines
@@ -13,15 +15,48 @@ from .versioning import version_lock_status
 
 
 DEFAULT_PROFILE_ROOT = Path("data/user")
+DEFAULT_VERSION_LOCK = Path("data/reference/version-lock.json")
 
 
-def _write_json(path: Path, value: Any) -> None:
+def _encode_json(value: Any) -> str:
+    return json.dumps(
+        value,
+        ensure_ascii=False,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+
+
+def _write_json_text(path: Path, encoded: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(encoded, encoding="utf-8")
+    os.replace(temporary, path)
 
 
 def _read_json(path: str | Path) -> Any:
     return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def _emit_json(value: Any, output: str | None = None) -> None:
+    encoded = _encode_json(value)
+    if output:
+        _write_json_text(Path(output), encoded)
+    print(encoded, end="")
+
+
+def _locked_ruleset_id() -> str:
+    status = version_lock_status(DEFAULT_VERSION_LOCK)
+    if status["refresh_required"]:
+        raise ValueError("version lock is expired; refresh the ruleset before calculating")
+    ruleset = status["ruleset"]
+    return f'{ruleset["version"]}.{ruleset["build"]}'
+
+
+def _require_locked_ruleset(actual: Any, expected: str, context: str) -> None:
+    if actual != expected:
+        raise ValueError(f"{context} ruleset must match locked ruleset {expected}")
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -47,6 +82,9 @@ def _build_parser() -> argparse.ArgumentParser:
     set_item.add_argument("--item-json", required=True)
     set_item.add_argument("--source-image")
     set_item.add_argument("--root", default=str(DEFAULT_PROFILE_ROOT))
+    render = profile_commands.add_parser("render")
+    render.add_argument("--output")
+    render.add_argument("--root", default=str(DEFAULT_PROFILE_ROOT))
 
     calc = subcommands.add_parser("calc", help="运行可复用的基础计算")
     calc_commands = calc.add_subparsers(dest="calc_command", required=True)
@@ -57,11 +95,20 @@ def _build_parser() -> argparse.ArgumentParser:
     ehp.add_argument("--life", type=float, required=True)
     ehp.add_argument("--barrier", type=float, default=0)
     ehp.add_argument("--reductions", type=float, nargs="*", default=[])
+    damage_event = calc_commands.add_parser("damage-event")
+    damage_event.add_argument("--input", required=True)
+    damage_event.add_argument("--output")
+    compare = calc_commands.add_parser("compare")
+    compare.add_argument("--input", required=True)
+    compare.add_argument("--output")
+    audit = calc_commands.add_parser("audit-panel")
+    audit.add_argument("--input", required=True)
+    audit.add_argument("--output")
 
     version = subcommands.add_parser("version", help="检查本地规则缓存是否仍有效")
     version_commands = version.add_subparsers(dest="version_command", required=True)
     status = version_commands.add_parser("status")
-    status.add_argument("--lock", default="data/reference/version-lock.json")
+    status.add_argument("--lock", default=str(DEFAULT_VERSION_LOCK))
     return parser
 
 
@@ -72,8 +119,7 @@ def main(argv: list[str] | None = None) -> int:
         lines, metadata = recognize_item_image(args.image)
         item = parse_item_lines(lines, source_image=Path(args.image).name)
         item["source"]["ocr"] = metadata
-        _write_json(Path(args.output), item)
-        print(json.dumps(item, ensure_ascii=False, indent=2, sort_keys=True))
+        _emit_json(item, args.output)
         return 0
 
     if args.command == "profile":
@@ -92,6 +138,9 @@ def main(argv: list[str] | None = None) -> int:
             result = store.load()
         elif args.profile_command == "merge":
             result = store.merge_character_fields(_read_json(args.json_file))
+        elif args.profile_command == "render":
+            output = store.render_snapshot(args.output)
+            result = {"snapshot": str(output.resolve())}
         else:
             result = store.set_item(
                 args.slot,
@@ -108,6 +157,38 @@ def main(argv: list[str] | None = None) -> int:
     if args.calc_command == "chain-attacks":
         result = expected_chained_attacks(args.probability, args.max_extra)
         print(json.dumps({"expected_total_attacks": result}, ensure_ascii=False))
+        return 0
+
+    if args.calc_command == "damage-event":
+        payload = _read_json(args.input)
+        _require_locked_ruleset(payload.get("ruleset"), _locked_ruleset_id(), "damage event")
+        result = calculate_damage_event(payload)
+        _emit_json(result, args.output)
+        return 0
+
+    if args.calc_command == "compare":
+        payload = _read_json(args.input)
+        expected_ruleset = _locked_ruleset_id()
+        for scenario_name, pair in payload.get("scenarios", {}).items():
+            for side in ("a", "b"):
+                _require_locked_ruleset(
+                    pair.get(side, {}).get("ruleset"),
+                    expected_ruleset,
+                    f"scenario {scenario_name} side {side}",
+                )
+        result = compare_loadouts(payload)
+        _emit_json(result, args.output)
+        return 0
+
+    if args.calc_command == "audit-panel":
+        payload = _read_json(args.input)
+        rules = dict(payload.get("rules", {}))
+        for field in ("ruleset", "scenario", "confidence"):
+            if field in payload:
+                rules[field] = payload[field]
+        _require_locked_ruleset(rules.get("ruleset"), _locked_ruleset_id(), "panel audit")
+        result = audit_panel(payload.get("stats", {}), rules)
+        _emit_json(result, args.output)
         return 0
 
     reduction = stack_damage_reductions(args.reductions)
