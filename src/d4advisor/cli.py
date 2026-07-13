@@ -12,25 +12,43 @@ from .advisor_engine import (
     calculate_damage_event,
     compare_loadouts,
 )
-from .calculations import effective_health, expected_chained_attacks, stack_damage_reductions
-from .ocr_engine import recognize_item_image
+from .calculations import (
+    effective_health,
+    expected_chained_attacks,
+    stack_damage_reductions,
+)
+from .ocr_engine import create_ocr_engine, recognize_item_image
 from .ocr_parser import parse_item_lines
 from .profile_store import CharacterStore
 from .versioning import version_lock_status
 
-
 DEFAULT_PROFILE_ROOT = Path("data/user")
 DEFAULT_VERSION_LOCK = Path("data/reference/version-lock.json")
+COMPLETE_EQUIPMENT_SLOTS = {
+    "helm",
+    "chest",
+    "gloves",
+    "pants",
+    "boots",
+    "amulet",
+    "ring_1",
+    "ring_2",
+    "weapon",
+    "totem",
+}
 
 
 def _encode_json(value: Any) -> str:
-    return json.dumps(
-        value,
-        ensure_ascii=False,
-        indent=2,
-        sort_keys=True,
-        allow_nan=False,
-    ) + "\n"
+    return (
+        json.dumps(
+            value,
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+            allow_nan=False,
+        )
+        + "\n"
+    )
 
 
 def _write_json_text(path: Path, encoded: str) -> None:
@@ -54,7 +72,9 @@ def _emit_json(value: Any, output: str | None = None) -> None:
 def _locked_ruleset_id() -> str:
     status = version_lock_status(DEFAULT_VERSION_LOCK)
     if status["refresh_required"]:
-        raise ValueError("version lock is expired; refresh the ruleset before calculating")
+        raise ValueError(
+            "version lock is expired; refresh the ruleset before calculating"
+        )
     ruleset = status["ruleset"]
     return f'{ruleset["version"]}.{ruleset["build"]}'
 
@@ -65,12 +85,24 @@ def _require_locked_ruleset(actual: Any, expected: str, context: str) -> None:
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="d4advisor", description="暗黑破坏神 IV 德鲁伊本地顾问工具")
+    parser = argparse.ArgumentParser(
+        prog="d4advisor", description="暗黑破坏神 IV 德鲁伊本地顾问工具"
+    )
     subcommands = parser.add_subparsers(dest="command", required=True)
 
     ocr = subcommands.add_parser("ocr", help="将装备截图识别成结构化 JSON")
     ocr.add_argument("image")
     ocr.add_argument("--output", "-o", required=True)
+    ocr_batch = subcommands.add_parser(
+        "ocr-batch", help="批量识别装备截图，可在全部通过关键校验后原子写入人物档案"
+    )
+    ocr_batch.add_argument("images", nargs="+")
+    ocr_batch.add_argument("--output-dir", default="data/user/candidates")
+    ocr_batch.add_argument("--manifest")
+    ocr_batch.add_argument("--equip", action="store_true")
+    ocr_batch.add_argument("--require-complete", action="store_true")
+    ocr_batch.add_argument("--allow-review", action="store_true")
+    ocr_batch.add_argument("--root", default=str(DEFAULT_PROFILE_ROOT))
     ocr_text = subcommands.add_parser("ocr-text", help="识别附魔候选等界面原始文本")
     ocr_text.add_argument("image")
     ocr_text.add_argument("--output", "-o", required=True)
@@ -143,6 +175,106 @@ def main(argv: list[str] | None = None) -> int:
         _emit_json(item, args.output)
         return 0
 
+    if args.command == "ocr-batch":
+        engine = create_ocr_engine()
+        output_dir = Path(args.output_dir)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        ring_number = 0
+        items: dict[str, dict[str, Any]] = {}
+        sources: dict[str, str] = {}
+        entries: list[dict[str, Any]] = []
+        batch_errors: list[str] = []
+
+        for index, image_name in enumerate(args.images, start=1):
+            image_path = Path(image_name)
+            lines, metadata = recognize_item_image(image_path, engine=engine)
+            item = parse_item_lines(lines, source_image=image_path.name)
+            item["source"]["ocr"] = metadata
+
+            parsed_slot = item.get("slot")
+            equipment_slot: str | None
+            if parsed_slot == "ring":
+                ring_number += 1
+                equipment_slot = f"ring_{ring_number}" if ring_number <= 2 else None
+            elif parsed_slot in COMPLETE_EQUIPMENT_SLOTS:
+                equipment_slot = parsed_slot
+            else:
+                equipment_slot = None
+
+            if equipment_slot is None:
+                output_stem = f"unresolved-{index:02d}"
+                batch_errors.append(f"{image_path.name}: 无法映射装备槽位")
+            else:
+                output_stem = equipment_slot
+                if equipment_slot in items:
+                    batch_errors.append(
+                        f"{image_path.name}: 重复装备槽位 {equipment_slot}"
+                    )
+                else:
+                    items[equipment_slot] = item
+                    sources[equipment_slot] = image_path.name
+
+            output_path = output_dir / f"{output_stem}.json"
+            _write_json_text(output_path, _encode_json(item))
+            entries.append(
+                {
+                    "source_image": image_path.name,
+                    "equipment_slot": equipment_slot,
+                    "item_json": output_path.name,
+                    "name": item.get("name"),
+                    "review": item.get("review", {}),
+                    "unparsed_lines": item.get("unparsed_lines", []),
+                }
+            )
+
+        detected_slots = set(items)
+        missing_slots = sorted(COMPLETE_EQUIPMENT_SLOTS.difference(detected_slots))
+        extra_slots = sorted(detected_slots.difference(COMPLETE_EQUIPMENT_SLOTS))
+        if args.require_complete and (missing_slots or extra_slots):
+            batch_errors.append(
+                "完整装备校验失败："
+                f"缺少 {', '.join(missing_slots) if missing_slots else '无'}；"
+                f"多余 {', '.join(extra_slots) if extra_slots else '无'}"
+            )
+
+        review_entries = [
+            entry for entry in entries if entry.get("review", {}).get("required")
+        ]
+        equipped = False
+        snapshot: str | None = None
+        if args.equip:
+            if batch_errors:
+                raise ValueError("；".join(batch_errors))
+            if review_entries and not args.allow_review:
+                blocking = ", ".join(
+                    f'{entry["source_image"]}: {entry["review"].get("reasons", [])}'
+                    for entry in review_entries
+                )
+                raise ValueError(
+                    f"批量结果包含需要复核的关键字段，未写入人物档案：{blocking}"
+                )
+            store = CharacterStore(args.root)
+            store.set_items(items, sources)
+            equipped = True
+            snapshot = "snapshot.html"
+
+        manifest = {
+            "schema_version": 1,
+            "images": len(args.images),
+            "detected_slots": sorted(detected_slots),
+            "missing_slots": missing_slots,
+            "errors": batch_errors,
+            "review_required": len(review_entries),
+            "equipped": equipped,
+            "snapshot": snapshot,
+            "items": entries,
+        }
+        manifest_path = (
+            Path(args.manifest) if args.manifest else output_dir / "batch-manifest.json"
+        )
+        _emit_json(manifest, str(manifest_path))
+        return 0
+
     if args.command == "ocr-text":
         lines, metadata = recognize_item_image(args.image)
         result = {
@@ -198,7 +330,14 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "version":
-        print(json.dumps(version_lock_status(args.lock), ensure_ascii=False, indent=2, sort_keys=True))
+        print(
+            json.dumps(
+                version_lock_status(args.lock),
+                ensure_ascii=False,
+                indent=2,
+                sort_keys=True,
+            )
+        )
         return 0
 
     if args.calc_command == "chain-attacks":
@@ -208,7 +347,9 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.calc_command == "damage-event":
         payload = _read_json(args.input)
-        _require_locked_ruleset(payload.get("ruleset"), _locked_ruleset_id(), "damage event")
+        _require_locked_ruleset(
+            payload.get("ruleset"), _locked_ruleset_id(), "damage event"
+        )
         result = calculate_damage_event(payload)
         _emit_json(result, args.output)
         return 0
@@ -242,7 +383,9 @@ def main(argv: list[str] | None = None) -> int:
         for field in ("ruleset", "scenario", "confidence"):
             if field in payload:
                 rules[field] = payload[field]
-        _require_locked_ruleset(rules.get("ruleset"), _locked_ruleset_id(), "panel audit")
+        _require_locked_ruleset(
+            rules.get("ruleset"), _locked_ruleset_id(), "panel audit"
+        )
         result = audit_panel(payload.get("stats", {}), rules)
         _emit_json(result, args.output)
         return 0

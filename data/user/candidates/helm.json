@@ -1,0 +1,180 @@
+{
+  "affixes": [
+    {
+      "confidence": 0.9993,
+      "display_name": "意力",
+      "is_greater_affix": true,
+      "operator": "add",
+      "raw_text": "+60点意力",
+      "stat": "willpower",
+      "unit": "flat",
+      "value": 60.0
+    },
+    {
+      "confidence": 0.999,
+      "display_name": "意力",
+      "is_greater_affix": true,
+      "operator": "add",
+      "raw_text": "+60点意力",
+      "stat": "willpower",
+      "unit": "flat",
+      "value": 60.0
+    }
+  ],
+  "ancestral": true,
+  "expansion": null,
+  "greater_affix_count": 2,
+  "implicit_affixes": [],
+  "item_power": 900,
+  "masterworking": null,
+  "minimum_confidence": 0.9507,
+  "name": "已装备",
+  "ocr_lines": [
+    {
+      "confidence": 0.9881,
+      "text": "已装备"
+    },
+    {
+      "confidence": 0.9991,
+      "text": "加斯伦的天命"
+    },
+    {
+      "confidence": 0.9964,
+      "text": "先祖暗金头盔"
+    },
+    {
+      "confidence": 0.9995,
+      "text": "900物品强度"
+    },
+    {
+      "confidence": 0.9745,
+      "text": "25（+25）品质"
+    },
+    {
+      "confidence": 0.9751,
+      "text": "已变"
+    },
+    {
+      "confidence": 0.9808,
+      "text": "2,004 护甲值"
+    },
+    {
+      "confidence": 0.9823,
+      "text": "+130点意力+[100-121]"
+    },
+    {
+      "confidence": 0.9577,
+      "text": "+1,595生命上限[1,226-1,450]"
+    },
+    {
+      "confidence": 0.9994,
+      "text": "+6灵力回复"
+    },
+    {
+      "confidence": 0.966,
+      "text": "26.3% 资源生成 [11.0 - 15.0]%"
+    },
+    {
+      "confidence": 0.9507,
+      "text": "+3,000护甲值"
+    },
+    {
+      "confidence": 0.9983,
+      "text": "旋风甲每5秒自动触发一次。旋风甲的被动"
+    },
+    {
+      "confidence": 0.9565,
+      "text": "效果使你获得 29% [20 - 30]% 伤害减免。"
+    },
+    {
+      "confidence": 0.9993,
+      "text": "+60点意力"
+    },
+    {
+      "confidence": 0.999,
+      "text": "+60点意力"
+    },
+    {
+      "confidence": 0.9976,
+      "text": "加斯伦者，古老界域之守御，辖幽邃之林并林间旷"
+    },
+    {
+      "confidence": 0.9866,
+      "text": "地。其和善仁厚，无之与匹也。蒙其垂青之人，皆得"
+    },
+    {
+      "confidence": 0.9932,
+      "text": "荒野之恩泽。但诵其名，即蒙纳受。"
+    },
+    {
+      "confidence": 0.9814,
+      "text": "需要等级：70"
+    },
+    {
+      "confidence": 0.9926,
+      "text": "账号绑定"
+    },
+    {
+      "confidence": 0.995,
+      "text": "仅限"
+    },
+    {
+      "confidence": 0.9952,
+      "text": "装备唯一"
+    },
+    {
+      "confidence": 1.0,
+      "text": "无法修改"
+    }
+  ],
+  "power": null,
+  "rarity": "unique",
+  "required_level": 70,
+  "review": {
+    "greater_affix_detection": "image_marker",
+    "reasons": [
+      "存在未解析文本"
+    ],
+    "required": true
+  },
+  "schema_version": 1,
+  "slot": "helm",
+  "source": {
+    "image": "codex-clipboard-cb9a949a-057f-496a-8611-80e5f1569171.png",
+    "ocr": {
+      "elapsed_seconds": [
+        1.180791500000396,
+        0.37340307235717773,
+        14.654142379760742
+      ],
+      "engine": "rapidocr_onnxruntime",
+      "engine_version": "1.4.4",
+      "image_height": 814,
+      "image_sha256": "91f12db65faeced819148051ea081093ee4d0b24e468993b0f9701a875d2ca8b",
+      "image_width": 752,
+      "panel_cutoff": 50,
+      "panel_text_left": 85
+    }
+  },
+  "tempering": [],
+  "unparsed_lines": [
+    "加斯伦的天命",
+    "25（+25）品质",
+    "已变",
+    "2,004 护甲值",
+    "+130点意力+[100-121]",
+    "+1,595生命上限[1,226-1,450]",
+    "+6灵力回复",
+    "26.3% 资源生成 [11.0 - 15.0]%",
+    "+3,000护甲值",
+    "旋风甲每5秒自动触发一次。旋风甲的被动",
+    "效果使你获得 29% [20 - 30]% 伤害减免。",
+    "加斯伦者，古老界域之守御，辖幽邃之林并林间旷",
+    "地。其和善仁厚，无之与匹也。蒙其垂青之人，皆得",
+    "荒野之恩泽。但诵其名，即蒙纳受。",
+    "账号绑定",
+    "仅限",
+    "装备唯一",
+    "无法修改"
+  ]
+}

@@ -2,7 +2,12 @@
   "schema_version": 1,
   "stats": {
     "all_resistance": {
-      "aliases_zh_cn": ["所有抗性", "全抗"],
+      "aliases_zh_cn": ["所有抗性", "全元素抗性", "全抗"],
+      "default_operator": "add",
+      "default_unit": "flat"
+    },
+    "all_attributes": {
+      "aliases_zh_cn": ["全属性", "所有属性"],
       "default_operator": "add",
       "default_unit": "flat"
     },
@@ -12,7 +17,7 @@
       "default_unit": "percent"
     },
     "armor": {
-      "aliases_zh_cn": ["护甲"],
+      "aliases_zh_cn": ["护甲", "护甲值"],
       "default_operator": "add",
       "default_unit": "flat"
     },
@@ -31,8 +36,28 @@
       "default_operator": "multiply",
       "default_unit": "percent"
     },
+    "fire_resistance": {
+      "aliases_zh_cn": ["火焰抗性", "火抗"],
+      "default_operator": "add",
+      "default_unit": "flat"
+    },
+    "healing_received": {
+      "aliases_zh_cn": ["受到的治疗", "受到的治疗效果"],
+      "default_operator": "add",
+      "default_unit": "percent"
+    },
+    "item_quality": {
+      "aliases_zh_cn": ["物品品质"],
+      "default_operator": "add",
+      "default_unit": "flat"
+    },
+    "lucky_hit_chance": {
+      "aliases_zh_cn": ["幸运一击几率", "幸运触发几率"],
+      "default_operator": "add",
+      "default_unit": "percent"
+    },
     "damage_multiplier": {
-      "aliases_zh_cn": ["伤害增倍", "伤害增幅", "所有伤害增倍"],
+      "aliases_zh_cn": ["伤害增倍", "伤害增幅", "所有伤害增倍", "全伤害增倍"],
       "default_operator": "multiply",
       "default_unit": "percent"
     },
@@ -56,15 +81,40 @@
       "default_operator": "multiply",
       "default_unit": "percent"
     },
+    "poison_damage_multiplier": {
+      "aliases_zh_cn": ["毒素伤害增倍", "毒素伤害增幅"],
+      "default_operator": "multiply",
+      "default_unit": "percent"
+    },
+    "poison_resistance": {
+      "aliases_zh_cn": ["毒素抗性", "毒抗"],
+      "default_operator": "add",
+      "default_unit": "flat"
+    },
     "resource_generation": {
       "aliases_zh_cn": ["资源生成", "资源生成量"],
       "default_operator": "add",
       "default_unit": "percent"
     },
+    "spirit_regeneration": {
+      "aliases_zh_cn": ["灵力回复", "灵力回复速度"],
+      "default_operator": "add",
+      "default_unit": "flat"
+    },
     "shred_ranks": {
-      "aliases_zh_cn": ["利爪", "利爪技能等级"],
+      "aliases_zh_cn": ["利爪", "利爪撕扯", "利爪技能等级", "利爪撕扯技能等级"],
       "default_operator": "add",
       "default_unit": "ranks"
+    },
+    "companion_skill_ranks": {
+      "aliases_zh_cn": ["同伴技能", "同伴技能等级"],
+      "default_operator": "add",
+      "default_unit": "ranks"
+    },
+    "vulnerable_damage_additive": {
+      "aliases_zh_cn": ["易伤伤害"],
+      "default_operator": "add",
+      "default_unit": "percent"
     },
     "vulnerable_damage_multiplier": {
       "aliases_zh_cn": ["易伤伤害增倍", "易伤伤害增幅"],
@@ -73,6 +123,11 @@
     },
     "willpower": {
       "aliases_zh_cn": ["意力"],
+      "default_operator": "add",
+      "default_unit": "flat"
+    },
+    "weapon_damage": {
+      "aliases_zh_cn": ["武器伤害"],
       "default_operator": "add",
       "default_unit": "flat"
     }

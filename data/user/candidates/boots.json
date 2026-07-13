@@ -1,0 +1,176 @@
+{
+  "affixes": [
+    {
+      "confidence": 0.9992,
+      "display_name": "意力",
+      "is_greater_affix": true,
+      "operator": "add",
+      "raw_text": "+182点意力",
+      "stat": "willpower",
+      "unit": "flat",
+      "value": 182.0
+    },
+    {
+      "confidence": 0.9989,
+      "display_name": "移动速度",
+      "is_greater_affix": true,
+      "operator": "add",
+      "raw_text": "+38%移动速度",
+      "stat": "movement_speed",
+      "unit": "percent",
+      "value": 38.0
+    }
+  ],
+  "ancestral": true,
+  "expansion": null,
+  "greater_affix_count": 2,
+  "implicit_affixes": [],
+  "item_power": 900,
+  "masterworking": null,
+  "minimum_confidence": 0.7606,
+  "name": "脚部",
+  "ocr_lines": [
+    {
+      "confidence": 0.9994,
+      "text": "脚部"
+    },
+    {
+      "confidence": 0.9931,
+      "text": "已装备"
+    },
+    {
+      "confidence": 0.9209,
+      "text": "汹涌风暴统治者护"
+    },
+    {
+      "confidence": 0.9993,
+      "text": "先祖传奇靴子"
+    },
+    {
+      "confidence": 0.9994,
+      "text": "900物品强度"
+    },
+    {
+      "confidence": 0.9449,
+      "text": "25（*+25）品质"
+    },
+    {
+      "confidence": 0.7606,
+      "text": "已擅变"
+    },
+    {
+      "confidence": 0.988,
+      "text": "1,001护甲值"
+    },
+    {
+      "confidence": 0.9992,
+      "text": "+182点意力"
+    },
+    {
+      "confidence": 0.9903,
+      "text": "+2,900生命上限"
+    },
+    {
+      "confidence": 0.9669,
+      "text": "+455点全元素抗性[327-392]"
+    },
+    {
+      "confidence": 0.9979,
+      "text": "+945点火焰抗性"
+    },
+    {
+      "confidence": 0.9986,
+      "text": "不可摧毁"
+    },
+    {
+      "confidence": 0.9989,
+      "text": "+38%移动速度"
+    },
+    {
+      "confidence": 0.9779,
+      "text": "已刻印：幸运一击：闪电伤害最多有15%几"
+    },
+    {
+      "confidence": 0.9967,
+      "text": "率使你获得一层残暴。"
+    },
+    {
+      "confidence": 0.9685,
+      "text": "当你拥有残暴时，获得14.5%[10.0-"
+    },
+    {
+      "confidence": 0.9795,
+      "text": "15.0]% 伤害减免。"
+    },
+    {
+      "confidence": 0.9943,
+      "text": "需要等级：70"
+    },
+    {
+      "confidence": 0.9961,
+      "text": "账号绑定"
+    },
+    {
+      "confidence": 0.9999,
+      "text": "无法修改"
+    },
+    {
+      "confidence": 0.9442,
+      "text": "出售价格：20,704"
+    },
+    {
+      "confidence": 0.996,
+      "text": "耐久度：坚不可摧"
+    }
+  ],
+  "power": null,
+  "rarity": "legendary",
+  "required_level": 70,
+  "review": {
+    "greater_affix_detection": "image_marker",
+    "reasons": [
+      "最低OCR置信度低于90%",
+      "存在未解析文本"
+    ],
+    "required": true
+  },
+  "schema_version": 1,
+  "slot": "boots",
+  "source": {
+    "image": "codex-clipboard-23808287-e86b-45c4-b506-223df875d435.png",
+    "ocr": {
+      "elapsed_seconds": [
+        2.3259087999999792,
+        0.025557518005371094,
+        6.871786832809448
+      ],
+      "engine": "rapidocr_onnxruntime",
+      "engine_version": "1.4.4",
+      "image_height": 886,
+      "image_sha256": "d6b592ad85846c00c188b55bfad25eee7a50d9c23f15d72d45daf226335c431d",
+      "image_width": 555,
+      "panel_cutoff": 31,
+      "panel_text_left": 66
+    }
+  },
+  "tempering": [],
+  "unparsed_lines": [
+    "已装备",
+    "汹涌风暴统治者护",
+    "25（*+25）品质",
+    "已擅变",
+    "1,001护甲值",
+    "+2,900生命上限",
+    "+455点全元素抗性[327-392]",
+    "+945点火焰抗性",
+    "不可摧毁",
+    "已刻印：幸运一击：闪电伤害最多有15%几",
+    "率使你获得一层残暴。",
+    "当你拥有残暴时，获得14.5%[10.0-",
+    "15.0]% 伤害减免。",
+    "账号绑定",
+    "无法修改",
+    "出售价格：20,704",
+    "耐久度：坚不可摧"
+  ]
+}

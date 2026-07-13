@@ -1,0 +1,137 @@
+{
+  "build_ref": {
+    "build_id": "1ZsP",
+    "provider": "d2core",
+    "snapshot": "2026-07-13",
+    "variant": 9
+  },
+  "equipment": {
+    "helm": {
+      "affixes": [
+        {
+          "display_name": "意力",
+          "is_greater_affix": false,
+          "operator": "add",
+          "raw_text": "+130 点意力 [100-121]",
+          "stat": "willpower",
+          "unit": "flat",
+          "value": 130
+        },
+        {
+          "display_name": "生命上限",
+          "is_greater_affix": false,
+          "operator": "add",
+          "raw_text": "+1,595 生命上限 [1,226-1,450]",
+          "stat": "max_life",
+          "unit": "flat",
+          "value": 1595
+        },
+        {
+          "display_name": "灵力回复",
+          "is_greater_affix": true,
+          "operator": "add",
+          "raw_text": "+6 灵力回复",
+          "stat": "spirit_regeneration",
+          "unit": "flat",
+          "value": 6
+        },
+        {
+          "display_name": "资源生成",
+          "is_greater_affix": false,
+          "operator": "add",
+          "raw_text": "26.3% 资源生成 [11.0-15.0]%",
+          "stat": "resource_generation",
+          "unit": "percent",
+          "value": 26.3
+        },
+        {
+          "display_name": "护甲值",
+          "is_greater_affix": true,
+          "operator": "add",
+          "raw_text": "+3,000 护甲值",
+          "stat": "armor",
+          "unit": "flat",
+          "value": 3000
+        },
+        {
+          "display_name": "镶嵌：意力",
+          "is_greater_affix": false,
+          "operator": "add",
+          "raw_text": "+60 点意力",
+          "stat": "willpower",
+          "unit": "flat",
+          "value": 60
+        },
+        {
+          "display_name": "镶嵌：意力",
+          "is_greater_affix": false,
+          "operator": "add",
+          "raw_text": "+60 点意力",
+          "stat": "willpower",
+          "unit": "flat",
+          "value": 60
+        }
+      ],
+      "ancestral": true,
+      "expansion": null,
+      "greater_affix_count": 2,
+      "implicit_affixes": [
+        {
+          "display_name": "基础护甲值",
+          "is_greater_affix": false,
+          "operator": "add",
+          "raw_text": "2,004 护甲值",
+          "stat": "armor",
+          "unit": "flat",
+          "value": 2004
+        }
+      ],
+      "item_power": 900,
+      "masterworking": null,
+      "name": "加斯伦的天命",
+      "power": {
+        "confidence": 0.99,
+        "description": "旋风甲每 5 秒自动触发一次。旋风甲的被动效果使你获得 29% [20-30]% 伤害减免。",
+        "values": [
+          29,
+          20,
+          30
+        ]
+      },
+      "quality": {
+        "bonus": 25,
+        "rank": 25,
+        "raw_text": "25（+25）品质"
+      },
+      "rarity": "unique",
+      "required_level": 70,
+      "review": {
+        "greater_affix_detection": "manual_image_review",
+        "reasons": [],
+        "required": false
+      },
+      "schema_version": 1,
+      "slot": "helm",
+      "source": {
+        "image": "codex-clipboard-cb9a949a-057f-496a-8611-80e5f1569171.png",
+        "image_sha256": "91f12db65faeced819148051ea081093ee4d0b24e468993b0f9701a875d2ca8b",
+        "ocr_candidate": "data/user/candidates/helm.json"
+      },
+      "source_image": "codex-clipboard-cb9a949a-057f-496a-8611-80e5f1569171.png",
+      "tempering": [],
+      "verification": {
+        "basis": "user_confirmed_equipped_screenshot",
+        "status": "manually_verified",
+        "verified_at": "2026-07-13T19:32:19+08:00"
+      }
+    }
+  },
+  "last_event": "set_item:helm",
+  "observations": [],
+  "paragon_overrides": {},
+  "profile_id": "nirvana-druid-s14",
+  "schema_version": 1,
+  "stats": {},
+  "updated_at": "2026-07-13T19:38:06+08:00",
+  "version_lock_ref": "data/reference/version-lock.json"
+}

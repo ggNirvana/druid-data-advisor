@@ -26,11 +26,26 @@ the installed Skill launcher:
 
 ## Ingest inputs
 
-1. Run `ocr IMAGE --output data/user/candidates/NAME.json` for every equipment screenshot.
-2. Check `review.required`, low-confidence fields, and `unparsed_lines`. Read the image only for unresolved fields that matter.
-3. Keep candidates separate. Use `profile set-item` only after the user confirms an item is equipped.
-4. Reuse `data/user/current.json`. Ask only for fields whose uncertainty could reverse the result.
-5. Never substitute planner-perfect rolls for the user's actual values.
+1. Prefer one batch for multiple screenshots. The OCR engine is reused and ring slots are assigned in
+   input order:
+
+   ```bash
+   "${CODEX_HOME:-$HOME/.codex}/skills/d4-druid-advisor/scripts/run_advisor.py" \
+     ocr-batch IMAGE... \
+     --output-dir data/user/candidates/batch \
+     --require-complete
+   ```
+
+2. Inspect `batch-manifest.json` and the generated JSON text first. Do not open screenshots merely
+   because flavor text, account-binding text, or other non-numeric metadata was ignored. Open only
+   the specific image whose result has `review.required=true`, a missing critical field, an
+   impossible value, or an unresolved numeric line that could affect the result.
+3. Keep candidates separate. After the user explicitly confirms the batch is currently equipped,
+   rerun with `--equip --require-complete`; this validates every item first and writes all slots in
+   one atomic profile update. Do not use `--allow-review` unless the blocking fields were checked.
+4. Use single-image `ocr IMAGE --output FILE` only for incremental candidates or targeted retries.
+5. Reuse `data/user/current.json`. Ask only for fields whose uncertainty could reverse the result.
+6. Never substitute planner-perfect rolls for the user's actual values.
 
 ## Choose the workflow
 

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "name": "汹涌风暴统治者护胫",
+  "slot": "boots",
+  "rarity": "legendary",
+  "ancestral": true,
+  "item_power": 900,
+  "quality": {"rank": 25, "bonus": 25, "raw_text": "25（+25）品质"},
+  "greater_affix_count": 4,
+  "implicit_affixes": [
+    {"stat": "armor", "display_name": "基础护甲值", "value": 1001, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "1,001 护甲值"}
+  ],
+  "affixes": [
+    {"stat": "willpower", "display_name": "意力", "value": 182, "unit": "flat", "operator": "add", "is_greater_affix": true, "raw_text": "+182 点意力"},
+    {"stat": "max_life", "display_name": "生命上限", "value": 2900, "unit": "flat", "operator": "add", "is_greater_affix": true, "raw_text": "+2,900 生命上限"},
+    {"stat": "all_resistance", "display_name": "全元素抗性", "value": 455, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "+455 点全元素抗性 [327-392]"},
+    {"stat": "fire_resistance", "display_name": "火焰抗性", "value": 945, "unit": "flat", "operator": "add", "is_greater_affix": true, "raw_text": "+945 点火焰抗性"},
+    {"stat": "movement_speed", "display_name": "移动速度", "value": 38, "unit": "percent", "operator": "add", "is_greater_affix": true, "raw_text": "+38% 移动速度"}
+  ],
+  "tempering": [],
+  "masterworking": null,
+  "power": {"description": "不可摧毁。已刻印：幸运一击：闪电伤害最多有 15% 几率使你获得一层残暴。当你拥有残暴时，获得 14.5% [10.0-15.0]% 伤害减免。", "values": [15, 14.5, 10, 15], "confidence": 0.99},
+  "required_level": 70,
+  "expansion": null,
+  "review": {"required": false, "reasons": [], "greater_affix_detection": "manual_image_review"},
+  "verification": {"status": "manually_verified", "verified_at": "2026-07-13T19:32:19+08:00", "basis": "user_confirmed_equipped_screenshot"},
+  "source": {"image": "codex-clipboard-23808287-e86b-45c4-b506-223df875d435.png", "image_sha256": "d6b592ad85846c00c188b55bfad25eee7a50d9c23f15d72d45daf226335c431d", "ocr_candidate": "data/user/candidates/boots.json"}
+}

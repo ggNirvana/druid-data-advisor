@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "name": "艾蕊达哀歌",
+  "slot": "ring",
+  "rarity": "unique",
+  "ancestral": true,
+  "item_power": 900,
+  "quality": {"rank": 31, "bonus": 25, "raw_text": "31（+25）品质"},
+  "greater_affix_count": 2,
+  "implicit_affixes": [
+    {"stat": "all_resistance", "display_name": "所有抗性", "value": 227, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "227 所有抗性"}
+  ],
+  "affixes": [
+    {"stat": "willpower", "display_name": "意力", "value": 144, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "+144 点意力 [100-121]"},
+    {"stat": "attack_speed_bonus", "display_name": "攻击速度", "value": 12.9, "unit": "percent", "operator": "add", "is_greater_affix": false, "raw_text": "+12.9% 攻击速度 [8.0-10.0]%"},
+    {"stat": "crit_chance", "display_name": "暴击几率", "value": 5.2, "unit": "percent", "operator": "add", "is_greater_affix": false, "raw_text": "+5.2% 暴击几率 [3.5-5.0]%"},
+    {"stat": "vulnerable_damage_multiplier", "display_name": "易伤伤害增倍", "value": 29, "unit": "percent", "operator": "multiply", "is_greater_affix": true, "raw_text": "x29% 易伤伤害增倍"},
+    {"stat": "item_quality", "display_name": "物品品质", "value": 6, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "+6 物品品质 [1-15]"},
+    {"stat": "cooldown_reduction", "display_name": "冷却时间缩减", "value": 9.4, "unit": "percent", "operator": "add", "is_greater_affix": true, "raw_text": "9.4% 冷却时间缩减"},
+    {"stat": "all_resistance", "display_name": "镶嵌：全元素抗性", "value": 375, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "+375 点全元素抗性"}
+  ],
+  "tempering": [],
+  "masterworking": null,
+  "power": {"description": "你施放的风暴技能会产生 1 点灵力并造成 35%[x] [25-35]% 额外伤害。当对易伤、被定身或被减速的敌人造成伤害时，这些加成翻倍。", "values": [1, 35, 25, 35, 2], "confidence": 0.99},
+  "required_level": 70,
+  "expansion": "憎恨之躯",
+  "review": {"required": false, "reasons": [], "greater_affix_detection": "manual_image_review"},
+  "verification": {"status": "manually_verified", "verified_at": "2026-07-13T19:32:19+08:00", "basis": "user_confirmed_equipped_screenshot"},
+  "source": {"image": "codex-clipboard-9498cbdc-a9d3-446d-ae5f-10b3a7b5c6cb.png", "image_sha256": "cf0ecf071bbe8a40cb68763f754aa5e01cbe95c2ec115336d5cd804366a5c500", "ocr_candidate": "data/user/candidates/ring_1.json"}
+}

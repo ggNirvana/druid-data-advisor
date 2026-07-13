@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "name": "加斯伦的天命",
+  "slot": "helm",
+  "rarity": "unique",
+  "ancestral": true,
+  "item_power": 900,
+  "quality": {"rank": 25, "bonus": 25, "raw_text": "25（+25）品质"},
+  "greater_affix_count": 2,
+  "implicit_affixes": [
+    {"stat": "armor", "display_name": "基础护甲值", "value": 2004, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "2,004 护甲值"}
+  ],
+  "affixes": [
+    {"stat": "willpower", "display_name": "意力", "value": 130, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "+130 点意力 [100-121]"},
+    {"stat": "max_life", "display_name": "生命上限", "value": 1595, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "+1,595 生命上限 [1,226-1,450]"},
+    {"stat": "spirit_regeneration", "display_name": "灵力回复", "value": 6, "unit": "flat", "operator": "add", "is_greater_affix": true, "raw_text": "+6 灵力回复"},
+    {"stat": "resource_generation", "display_name": "资源生成", "value": 26.3, "unit": "percent", "operator": "add", "is_greater_affix": false, "raw_text": "26.3% 资源生成 [11.0-15.0]%"},
+    {"stat": "armor", "display_name": "护甲值", "value": 3000, "unit": "flat", "operator": "add", "is_greater_affix": true, "raw_text": "+3,000 护甲值"},
+    {"stat": "willpower", "display_name": "镶嵌：意力", "value": 60, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "+60 点意力"},
+    {"stat": "willpower", "display_name": "镶嵌：意力", "value": 60, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "+60 点意力"}
+  ],
+  "tempering": [],
+  "masterworking": null,
+  "power": {"description": "旋风甲每 5 秒自动触发一次。旋风甲的被动效果使你获得 29% [20-30]% 伤害减免。", "values": [29, 20, 30], "confidence": 0.99},
+  "required_level": 70,
+  "expansion": null,
+  "review": {"required": false, "reasons": [], "greater_affix_detection": "manual_image_review"},
+  "verification": {"status": "manually_verified", "verified_at": "2026-07-13T19:32:19+08:00", "basis": "user_confirmed_equipped_screenshot"},
+  "source": {"image": "codex-clipboard-cb9a949a-057f-496a-8611-80e5f1569171.png", "image_sha256": "91f12db65faeced819148051ea081093ee4d0b24e468993b0f9701a875d2ca8b", "ocr_candidate": "data/user/candidates/helm.json"}
+}

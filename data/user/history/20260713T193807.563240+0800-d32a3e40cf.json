@@ -1,0 +1,358 @@
+{
+  "build_ref": {
+    "build_id": "1ZsP",
+    "provider": "d2core",
+    "snapshot": "2026-07-13",
+    "variant": 9
+  },
+  "equipment": {
+    "chest": {
+      "affixes": [
+        {
+          "display_name": "意力",
+          "is_greater_affix": true,
+          "operator": "add",
+          "raw_text": "+242 点意力",
+          "stat": "willpower",
+          "unit": "flat",
+          "value": 242
+        },
+        {
+          "display_name": "生命上限",
+          "is_greater_affix": false,
+          "operator": "add",
+          "raw_text": "+1,813 生命上限 [1,226-1,450]",
+          "stat": "max_life",
+          "unit": "flat",
+          "value": 1813
+        },
+        {
+          "display_name": "受到的治疗",
+          "is_greater_affix": true,
+          "operator": "add",
+          "raw_text": "+22.5% 受到的治疗",
+          "stat": "healing_received",
+          "unit": "percent",
+          "value": 22.5
+        },
+        {
+          "display_name": "毒素抗性",
+          "is_greater_affix": false,
+          "operator": "add",
+          "raw_text": "+756 点毒素抗性 [524-630]",
+          "stat": "poison_resistance",
+          "unit": "flat",
+          "value": 756
+        },
+        {
+          "display_name": "全属性",
+          "is_greater_affix": false,
+          "operator": "add",
+          "raw_text": "+108 点全属性 [75-100]",
+          "stat": "all_attributes",
+          "unit": "flat",
+          "value": 108
+        },
+        {
+          "display_name": "生命上限",
+          "is_greater_affix": true,
+          "operator": "add",
+          "raw_text": "+2,250 生命上限",
+          "stat": "max_life",
+          "unit": "flat",
+          "value": 2250
+        }
+      ],
+      "ancestral": true,
+      "expansion": null,
+      "greater_affix_count": 3,
+      "implicit_affixes": [
+        {
+          "display_name": "基础护甲值",
+          "is_greater_affix": false,
+          "operator": "add",
+          "raw_text": "3,506 护甲值",
+          "stat": "armor",
+          "unit": "flat",
+          "value": 3506
+        }
+      ],
+      "item_power": 900,
+      "masterworking": null,
+      "name": "衰弱毒素之厄运胸甲",
+      "power": {
+        "confidence": 0.99,
+        "description": "已刻印：你获得 21.0% [20.0-30.0]% 伤害减免，并且中毒的敌人对你造成的伤害降低 15%。符文：莫尼莫特（100/150）—轻盈暗影；施放 2 个机动或骇术技能（2 次）时，获得游侠暗影帷幕技能的 1 个暗影，每个暗影都会降低受到的伤害（溢出：获得多个暗影）。",
+        "values": [
+          21,
+          20,
+          30,
+          15
+        ]
+      },
+      "quality": {
+        "bonus": 25,
+        "rank": 25,
+        "raw_text": "25（+25）品质"
+      },
+      "rarity": "legendary",
+      "required_level": 70,
+      "review": {
+        "greater_affix_detection": "manual_image_review",
+        "reasons": [],
+        "required": false
+      },
+      "schema_version": 1,
+      "slot": "chest",
+      "source": {
+        "image": "codex-clipboard-38033951-cba8-4d99-bc38-1c01d77fdb57.png",
+        "image_sha256": "4c58b92c06696ab12d8aca3fee83cf5e375c417e0c8eed18a125fd73ae25f17f",
+        "ocr_candidate": "data/user/candidates/chest.json"
+      },
+      "source_image": "codex-clipboard-38033951-cba8-4d99-bc38-1c01d77fdb57.png",
+      "tempering": [],
+      "verification": {
+        "basis": "user_confirmed_equipped_screenshot",
+        "status": "manually_verified",
+        "verified_at": "2026-07-13T19:32:19+08:00"
+      }
+    },
+    "gloves": {
+      "affixes": [
+        {
+          "display_name": "意力",
+          "is_greater_affix": false,
+          "operator": "add",
+          "raw_text": "+225 点意力 [150-180]",
+          "stat": "willpower",
+          "unit": "flat",
+          "value": 225
+        },
+        {
+          "display_name": "生命上限",
+          "is_greater_affix": false,
+          "operator": "add",
+          "raw_text": "+2,750 生命上限 [1,831-2,200]",
+          "stat": "max_life",
+          "unit": "flat",
+          "value": 2750
+        },
+        {
+          "display_name": "暴击几率",
+          "is_greater_affix": false,
+          "operator": "add",
+          "raw_text": "+14.9% 暴击几率 [6.5-8.5]%",
+          "stat": "crit_chance",
+          "unit": "percent",
+          "value": 14.9
+        },
+        {
+          "display_name": "暴击伤害增倍",
+          "is_greater_affix": false,
+          "operator": "multiply",
+          "raw_text": "x63% 暴击伤害增倍 [26-50]%",
+          "stat": "critical_damage_multiplier",
+          "unit": "percent",
+          "value": 63
+        },
+        {
+          "display_name": "幸运一击几率",
+          "is_greater_affix": false,
+          "operator": "add",
+          "raw_text": "+10.0% 幸运一击几率 [6.0-8.0]%",
+          "stat": "lucky_hit_chance",
+          "unit": "percent",
+          "value": 10
+        },
+        {
+          "display_name": "易伤伤害",
+          "is_greater_affix": false,
+          "operator": "add",
+          "raw_text": "+50% 易伤伤害 [20-40]%",
+          "stat": "vulnerable_damage_additive",
+          "unit": "percent",
+          "value": 50
+        }
+      ],
+      "ancestral": true,
+      "expansion": "憎恨之躯",
+      "greater_affix_count": 0,
+      "implicit_affixes": [
+        {
+          "display_name": "基础护甲值",
+          "is_greater_affix": false,
+          "operator": "add",
+          "raw_text": "1,001 护甲值",
+          "stat": "armor",
+          "unit": "flat",
+          "value": 1001
+        }
+      ],
+      "item_power": 900,
+      "masterworking": null,
+      "name": "黑暗嚎叫",
+      "power": {
+        "confidence": 0.99,
+        "description": "挫志咆哮现在是狼人技能。此外，挫志咆哮持续期间，你在狼人形态下造成的伤害提高 104%[x] [78-104]%。",
+        "values": [
+          104,
+          78,
+          104
+        ]
+      },
+      "quality": {
+        "bonus": 25,
+        "rank": 25,
+        "raw_text": "25（+25）品质"
+      },
+      "rarity": "unique",
+      "required_level": 70,
+      "review": {
+        "greater_affix_detection": "manual_image_review",
+        "reasons": [],
+        "required": false
+      },
+      "schema_version": 1,
+      "slot": "gloves",
+      "source": {
+        "image": "codex-clipboard-1cbc7d31-3686-471a-9968-11c54e246ca8.png",
+        "image_sha256": "ffea09722cfc7e40077b6e173885bbbb902c25e8aad0648fc6642306f8a69754",
+        "ocr_candidate": "data/user/candidates/gloves.json"
+      },
+      "source_image": "codex-clipboard-1cbc7d31-3686-471a-9968-11c54e246ca8.png",
+      "tempering": [],
+      "verification": {
+        "basis": "user_confirmed_equipped_screenshot",
+        "status": "manually_verified",
+        "verified_at": "2026-07-13T19:32:19+08:00"
+      }
+    },
+    "helm": {
+      "affixes": [
+        {
+          "display_name": "意力",
+          "is_greater_affix": false,
+          "operator": "add",
+          "raw_text": "+130 点意力 [100-121]",
+          "stat": "willpower",
+          "unit": "flat",
+          "value": 130
+        },
+        {
+          "display_name": "生命上限",
+          "is_greater_affix": false,
+          "operator": "add",
+          "raw_text": "+1,595 生命上限 [1,226-1,450]",
+          "stat": "max_life",
+          "unit": "flat",
+          "value": 1595
+        },
+        {
+          "display_name": "灵力回复",
+          "is_greater_affix": true,
+          "operator": "add",
+          "raw_text": "+6 灵力回复",
+          "stat": "spirit_regeneration",
+          "unit": "flat",
+          "value": 6
+        },
+        {
+          "display_name": "资源生成",
+          "is_greater_affix": false,
+          "operator": "add",
+          "raw_text": "26.3% 资源生成 [11.0-15.0]%",
+          "stat": "resource_generation",
+          "unit": "percent",
+          "value": 26.3
+        },
+        {
+          "display_name": "护甲值",
+          "is_greater_affix": true,
+          "operator": "add",
+          "raw_text": "+3,000 护甲值",
+          "stat": "armor",
+          "unit": "flat",
+          "value": 3000
+        },
+        {
+          "display_name": "镶嵌：意力",
+          "is_greater_affix": false,
+          "operator": "add",
+          "raw_text": "+60 点意力",
+          "stat": "willpower",
+          "unit": "flat",
+          "value": 60
+        },
+        {
+          "display_name": "镶嵌：意力",
+          "is_greater_affix": false,
+          "operator": "add",
+          "raw_text": "+60 点意力",
+          "stat": "willpower",
+          "unit": "flat",
+          "value": 60
+        }
+      ],
+      "ancestral": true,
+      "expansion": null,
+      "greater_affix_count": 2,
+      "implicit_affixes": [
+        {
+          "display_name": "基础护甲值",
+          "is_greater_affix": false,
+          "operator": "add",
+          "raw_text": "2,004 护甲值",
+          "stat": "armor",
+          "unit": "flat",
+          "value": 2004
+        }
+      ],
+      "item_power": 900,
+      "masterworking": null,
+      "name": "加斯伦的天命",
+      "power": {
+        "confidence": 0.99,
+        "description": "旋风甲每 5 秒自动触发一次。旋风甲的被动效果使你获得 29% [20-30]% 伤害减免。",
+        "values": [
+          29,
+          20,
+          30
+        ]
+      },
+      "quality": {
+        "bonus": 25,
+        "rank": 25,
+        "raw_text": "25（+25）品质"
+      },
+      "rarity": "unique",
+      "required_level": 70,
+      "review": {
+        "greater_affix_detection": "manual_image_review",
+        "reasons": [],
+        "required": false
+      },
+      "schema_version": 1,
+      "slot": "helm",
+      "source": {
+        "image": "codex-clipboard-cb9a949a-057f-496a-8611-80e5f1569171.png",
+        "image_sha256": "91f12db65faeced819148051ea081093ee4d0b24e468993b0f9701a875d2ca8b",
+        "ocr_candidate": "data/user/candidates/helm.json"
+      },
+      "source_image": "codex-clipboard-cb9a949a-057f-496a-8611-80e5f1569171.png",
+      "tempering": [],
+      "verification": {
+        "basis": "user_confirmed_equipped_screenshot",
+        "status": "manually_verified",
+        "verified_at": "2026-07-13T19:32:19+08:00"
+      }
+    }
+  },
+  "last_event": "set_item:gloves",
+  "observations": [],
+  "paragon_overrides": {},
+  "profile_id": "nirvana-druid-s14",
+  "schema_version": 1,
+  "stats": {},
+  "updated_at": "2026-07-13T19:38:07+08:00",
+  "version_lock_ref": "data/reference/version-lock.json"
+}

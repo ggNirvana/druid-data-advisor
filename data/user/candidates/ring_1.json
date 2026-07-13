@@ -1,0 +1,221 @@
+{
+  "affixes": [
+    {
+      "confidence": 0.9552,
+      "display_name": "易伤伤害增倍",
+      "is_greater_affix": true,
+      "operator": "multiply",
+      "raw_text": "x29%易伤伤害增倍",
+      "stat": "vulnerable_damage_multiplier",
+      "unit": "percent",
+      "value": 29.0
+    },
+    {
+      "confidence": 0.999,
+      "display_name": "冷却时间缩减",
+      "is_greater_affix": true,
+      "operator": "add",
+      "raw_text": "9.4%冷却时间缩减",
+      "stat": "cooldown_reduction",
+      "unit": "percent",
+      "value": 9.4
+    }
+  ],
+  "ancestral": true,
+  "expansion": null,
+  "greater_affix_count": 2,
+  "implicit_affixes": [
+    {
+      "confidence": 0.9999,
+      "display_name": "所有抗性",
+      "is_greater_affix": false,
+      "operator": "add",
+      "raw_text": "227所有抗性",
+      "stat": "all_resistance",
+      "unit": "flat",
+      "value": 227.0
+    }
+  ],
+  "item_power": 900,
+  "masterworking": null,
+  "minimum_confidence": 0.8172,
+  "name": "戒指",
+  "ocr_lines": [
+    {
+      "confidence": 0.9994,
+      "text": "戒指"
+    },
+    {
+      "confidence": 0.9894,
+      "text": "已装备"
+    },
+    {
+      "confidence": 0.9186,
+      "text": "艾蕊达哀歌#"
+    },
+    {
+      "confidence": 0.9979,
+      "text": "先祖暗金戒指"
+    },
+    {
+      "confidence": 0.9991,
+      "text": "900物品强度"
+    },
+    {
+      "confidence": 0.9926,
+      "text": "31（+25）品质"
+    },
+    {
+      "confidence": 0.983,
+      "text": "已变"
+    },
+    {
+      "confidence": 0.9999,
+      "text": "227所有抗性"
+    },
+    {
+      "confidence": 0.9603,
+      "text": "+144 点意力+[100-121]"
+    },
+    {
+      "confidence": 0.9868,
+      "text": "+12.9%攻击速度[8.0-10.0]%"
+    },
+    {
+      "confidence": 0.9694,
+      "text": "+5.2%暴击几率[3.5-5.0]%"
+    },
+    {
+      "confidence": 0.9552,
+      "text": "x29%易伤伤害增倍"
+    },
+    {
+      "confidence": 0.9492,
+      "text": "+6物品品质[1-15]"
+    },
+    {
+      "confidence": 0.999,
+      "text": "9.4%冷却时间缩减"
+    },
+    {
+      "confidence": 0.9945,
+      "text": "你施放的风暴技能会产生1点灵力并造成"
+    },
+    {
+      "confidence": 0.942,
+      "text": "35%[×][25-35]%额外伤害。当对易伤、被"
+    },
+    {
+      "confidence": 0.9977,
+      "text": "定身或被减速的敌人造成伤害时，这些加成"
+    },
+    {
+      "confidence": 0.9997,
+      "text": "翻倍。"
+    },
+    {
+      "confidence": 0.9976,
+      "text": "+375点全元素抗性"
+    },
+    {
+      "confidence": 0.9848,
+      "text": "“我望着她攀上群山之巅。她抚弄着马尾竖琴，奏响"
+    },
+    {
+      "confidence": 0.9919,
+      "text": "了一曲哀歌，那曲调凄绝透骨，引得苍穹色变，雷霆"
+    },
+    {
+      "confidence": 0.8172,
+      "text": "悲鸣。”一—"
+    },
+    {
+      "confidence": 0.9963,
+      "text": "《索格伦的历史》第四章"
+    },
+    {
+      "confidence": 0.9944,
+      "text": "需要等级：70"
+    },
+    {
+      "confidence": 0.9973,
+      "text": "账号绑定"
+    },
+    {
+      "confidence": 0.9951,
+      "text": "仅限"
+    },
+    {
+      "confidence": 0.9904,
+      "text": "装备唯一"
+    },
+    {
+      "confidence": 0.9395,
+      "text": "憎恨之王物品"
+    },
+    {
+      "confidence": 0.9999,
+      "text": "无法修改"
+    },
+    {
+      "confidence": 0.9571,
+      "text": "出售价格：164，927"
+    }
+  ],
+  "power": null,
+  "rarity": "unique",
+  "required_level": 70,
+  "review": {
+    "greater_affix_detection": "image_marker",
+    "reasons": [
+      "最低OCR置信度低于90%",
+      "存在未解析文本"
+    ],
+    "required": true
+  },
+  "schema_version": 1,
+  "slot": "ring",
+  "source": {
+    "image": "codex-clipboard-9498cbdc-a9d3-446d-ae5f-10b3a7b5c6cb.png",
+    "ocr": {
+      "elapsed_seconds": [
+        2.974973400000181,
+        0.1529529094696045,
+        10.429656982421875
+      ],
+      "engine": "rapidocr_onnxruntime",
+      "engine_version": "1.4.4",
+      "image_height": 988,
+      "image_sha256": "cf0ecf071bbe8a40cb68763f754aa5e01cbe95c2ec115336d5cd804366a5c500",
+      "image_width": 562,
+      "panel_cutoff": 28,
+      "panel_text_left": 63
+    }
+  },
+  "tempering": [],
+  "unparsed_lines": [
+    "已装备",
+    "艾蕊达哀歌#",
+    "31（+25）品质",
+    "已变",
+    "+144 点意力+[100-121]",
+    "+12.9%攻击速度[8.0-10.0]%",
+    "+5.2%暴击几率[3.5-5.0]%",
+    "+6物品品质[1-15]",
+    "你施放的风暴技能会产生1点灵力并造成",
+    "35%[×][25-35]%额外伤害。当对易伤、被",
+    "定身或被减速的敌人造成伤害时，这些加成",
+    "翻倍。",
+    "+375点全元素抗性",
+    "“我望着她攀上群山之巅。她抚弄着马尾竖琴，奏响",
+    "了一曲哀歌，那曲调凄绝透骨，引得苍穹色变，雷霆",
+    "悲鸣。”一—",
+    "《索格伦的历史》第四章",
+    "账号绑定",
+    "仅限",
+    "装备唯一",
+    "憎恨之王物品",
+    "无法修改",
+    "出售价格：164，927"
+  ]
+}

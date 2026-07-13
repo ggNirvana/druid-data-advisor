@@ -1,0 +1,172 @@
+{
+  "affixes": [
+    {
+      "confidence": 0.9673,
+      "display_name": "意力",
+      "is_greater_affix": true,
+      "operator": "add",
+      "raw_text": "+242 点意力",
+      "stat": "willpower",
+      "unit": "flat",
+      "value": 242.0
+    }
+  ],
+  "ancestral": true,
+  "expansion": null,
+  "greater_affix_count": 1,
+  "implicit_affixes": [],
+  "item_power": 900,
+  "masterworking": null,
+  "minimum_confidence": 0.721,
+  "name": "已装备",
+  "ocr_lines": [
+    {
+      "confidence": 0.9903,
+      "text": "已装备"
+    },
+    {
+      "confidence": 0.805,
+      "text": "S"
+    },
+    {
+      "confidence": 0.9745,
+      "text": "衰弱毒素之厄运胸"
+    },
+    {
+      "confidence": 0.9995,
+      "text": "先祖传奇胸甲"
+    },
+    {
+      "confidence": 0.9994,
+      "text": "900物品强度"
+    },
+    {
+      "confidence": 0.9396,
+      "text": "25（*+25）品质"
+    },
+    {
+      "confidence": 0.721,
+      "text": "已擅变"
+    },
+    {
+      "confidence": 0.9952,
+      "text": "3,506护甲值"
+    },
+    {
+      "confidence": 0.9673,
+      "text": "+242 点意力"
+    },
+    {
+      "confidence": 0.9798,
+      "text": "+1,813 生命上限 [1,226 - 1,450] "
+    },
+    {
+      "confidence": 0.9996,
+      "text": "+22.5%受到的治疗"
+    },
+    {
+      "confidence": 0.9674,
+      "text": "+756点毒素抗性[524-630]"
+    },
+    {
+      "confidence": 0.9492,
+      "text": "+108 点全属性 +[75 - 100]"
+    },
+    {
+      "confidence": 0.9872,
+      "text": "+2,250 生命上限"
+    },
+    {
+      "confidence": 0.9857,
+      "text": "已刻印：你获得21.0%[20.0-30.0]%伤害减"
+    },
+    {
+      "confidence": 0.999,
+      "text": "免，并且中毒的敌人对你造成的伤害降低"
+    },
+    {
+      "confidence": 0.9693,
+      "text": "15%"
+    },
+    {
+      "confidence": 0.968,
+      "text": "莫尼莫特（100/150）-轻盈暗影"
+    },
+    {
+      "confidence": 0.9379,
+      "text": "施放 2个机动或骇术技能。（2 次）："
+    },
+    {
+      "confidence": 0.9709,
+      "text": "获得游侠暗影帷幕技能的1个暗影，每个暗"
+    },
+    {
+      "confidence": 0.9972,
+      "text": "影都会降低你受到的伤害。"
+    },
+    {
+      "confidence": 0.9896,
+      "text": "（溢出：获得多个暗影）"
+    },
+    {
+      "confidence": 0.9941,
+      "text": "需要等级：70"
+    },
+    {
+      "confidence": 0.9936,
+      "text": "账号绑定"
+    }
+  ],
+  "power": null,
+  "rarity": "legendary",
+  "required_level": 70,
+  "review": {
+    "greater_affix_detection": "image_marker",
+    "reasons": [
+      "最低OCR置信度低于90%",
+      "存在未解析文本"
+    ],
+    "required": true
+  },
+  "schema_version": 1,
+  "slot": "chest",
+  "source": {
+    "image": "codex-clipboard-38033951-cba8-4d99-bc38-1c01d77fdb57.png",
+    "ocr": {
+      "elapsed_seconds": [
+        2.0768183999998655,
+        0.15532636642456055,
+        9.756498098373413
+      ],
+      "engine": "rapidocr_onnxruntime",
+      "engine_version": "1.4.4",
+      "image_height": 803,
+      "image_sha256": "4c58b92c06696ab12d8aca3fee83cf5e375c417e0c8eed18a125fd73ae25f17f",
+      "image_width": 803,
+      "panel_cutoff": 96,
+      "panel_text_left": 131
+    }
+  },
+  "tempering": [],
+  "unparsed_lines": [
+    "S",
+    "衰弱毒素之厄运胸",
+    "25（*+25）品质",
+    "已擅变",
+    "3,506护甲值",
+    "+1,813 生命上限 [1,226 - 1,450] ",
+    "+22.5%受到的治疗",
+    "+756点毒素抗性[524-630]",
+    "+108 点全属性 +[75 - 100]",
+    "+2,250 生命上限",
+    "已刻印：你获得21.0%[20.0-30.0]%伤害减",
+    "免，并且中毒的敌人对你造成的伤害降低",
+    "15%",
+    "莫尼莫特（100/150）-轻盈暗影",
+    "施放 2个机动或骇术技能。（2 次）：",
+    "获得游侠暗影帷幕技能的1个暗影，每个暗",
+    "影都会降低你受到的伤害。",
+    "（溢出：获得多个暗影）",
+    "账号绑定"
+  ]
+}

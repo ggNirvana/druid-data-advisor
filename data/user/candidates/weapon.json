@@ -1,0 +1,215 @@
+{
+  "affixes": [
+    {
+      "confidence": 0.9988,
+      "display_name": "意力",
+      "is_greater_affix": true,
+      "operator": "add",
+      "raw_text": "+270点意力",
+      "stat": "willpower",
+      "unit": "flat",
+      "value": 270.0
+    },
+    {
+      "confidence": 0.9982,
+      "display_name": "暴击几率",
+      "is_greater_affix": true,
+      "operator": "add",
+      "raw_text": "+8.0%暴击几率",
+      "stat": "crit_chance",
+      "unit": "percent",
+      "value": 8.0
+    },
+    {
+      "confidence": 0.9099,
+      "display_name": "闪电伤害增倍",
+      "is_greater_affix": true,
+      "operator": "multiply",
+      "raw_text": "x28%闪电伤害增倍",
+      "stat": "lightning_damage_multiplier",
+      "unit": "percent",
+      "value": 28.0
+    }
+  ],
+  "ancestral": true,
+  "expansion": null,
+  "greater_affix_count": 3,
+  "implicit_affixes": [],
+  "item_power": 900,
+  "masterworking": null,
+  "minimum_confidence": 0.7436,
+  "name": "已装备",
+  "ocr_lines": [
+    {
+      "confidence": 0.99,
+      "text": "已装备"
+    },
+    {
+      "confidence": 0.9974,
+      "text": "盈月当空"
+    },
+    {
+      "confidence": 0.9948,
+      "text": "先祖神话暗金斧"
+    },
+    {
+      "confidence": 0.9992,
+      "text": "900物品强度"
+    },
+    {
+      "confidence": 0.936,
+      "text": "25（*+25）品质"
+    },
+    {
+      "confidence": 0.7436,
+      "text": "已蟑变"
+    },
+    {
+      "confidence": 0.9848,
+      "text": "2,072每秒伤害"
+    },
+    {
+      "confidence": 0.9235,
+      "text": "每次命中伤害[1,570-2,198]"
+    },
+    {
+      "confidence": 0.9732,
+      "text": "每秒攻击次数（快）：1.10"
+    },
+    {
+      "confidence": 0.9988,
+      "text": "+270点意力"
+    },
+    {
+      "confidence": 0.9668,
+      "text": "+3,300生命上限"
+    },
+    {
+      "confidence": 0.9363,
+      "text": "x13%全伤害增倍[6-10]%"
+    },
+    {
+      "confidence": 0.9529,
+      "text": "+4至利爪撕扯[3-4]"
+    },
+    {
+      "confidence": 0.9982,
+      "text": "+8.0%暴击几率"
+    },
+    {
+      "confidence": 0.9627,
+      "text": "利爪撕扯造成的伤害提高78%[×][58-78]%"
+    },
+    {
+      "confidence": 0.9903,
+      "text": "，并且利爪撕扯有33%的几率施展一次额外"
+    },
+    {
+      "confidence": 0.9988,
+      "text": "攻击，至多施展4次。"
+    },
+    {
+      "confidence": 0.9099,
+      "text": "x28%闪电伤害增倍"
+    },
+    {
+      "confidence": 0.9954,
+      "text": "满月前的夜晚有时比满月之夜危险得多。疯狂与躁动"
+    },
+    {
+      "confidence": 0.9938,
+      "text": "开始显现，而夜色漆黑得足以让猎人消失在猎物的视"
+    },
+    {
+      "confidence": 0.9969,
+      "text": "线之外。"
+    },
+    {
+      "confidence": 0.9882,
+      "text": "需要等级：70"
+    },
+    {
+      "confidence": 0.9867,
+      "text": "账号绑定"
+    },
+    {
+      "confidence": 0.9961,
+      "text": "仅限"
+    },
+    {
+      "confidence": 0.9898,
+      "text": "装备唯一"
+    },
+    {
+      "confidence": 0.9558,
+      "text": "憎恨之王物品"
+    },
+    {
+      "confidence": 0.9999,
+      "text": "无法修改"
+    },
+    {
+      "confidence": 0.9777,
+      "text": "出售价格：1,641,970"
+    },
+    {
+      "confidence": 0.9765,
+      "text": "耐久度：70/100"
+    }
+  ],
+  "power": null,
+  "rarity": "unique",
+  "required_level": 70,
+  "review": {
+    "greater_affix_detection": "image_marker",
+    "reasons": [
+      "最低OCR置信度低于90%",
+      "存在未解析文本"
+    ],
+    "required": true
+  },
+  "schema_version": 1,
+  "slot": "weapon",
+  "source": {
+    "image": "codex-clipboard-fa49e6c7-e3ae-4832-a68a-eedf1853b4dd.png",
+    "ocr": {
+      "elapsed_seconds": [
+        1.4408456000001024,
+        0.10819768905639648,
+        9.695650577545166
+      ],
+      "engine": "rapidocr_onnxruntime",
+      "engine_version": "1.4.4",
+      "image_height": 962,
+      "image_sha256": "50c5269aa68afab4e607c9a04200e96a64588a761b8d707f2aa96948db174d0f",
+      "image_width": 603,
+      "panel_cutoff": 62,
+      "panel_text_left": 97
+    }
+  },
+  "tempering": [],
+  "unparsed_lines": [
+    "盈月当空",
+    "25（*+25）品质",
+    "已蟑变",
+    "2,072每秒伤害",
+    "每次命中伤害[1,570-2,198]",
+    "每秒攻击次数（快）：1.10",
+    "+3,300生命上限",
+    "x13%全伤害增倍[6-10]%",
+    "+4至利爪撕扯[3-4]",
+    "利爪撕扯造成的伤害提高78%[×][58-78]%",
+    "，并且利爪撕扯有33%的几率施展一次额外",
+    "攻击，至多施展4次。",
+    "满月前的夜晚有时比满月之夜危险得多。疯狂与躁动",
+    "开始显现，而夜色漆黑得足以让猎人消失在猎物的视",
+    "线之外。",
+    "账号绑定",
+    "仅限",
+    "装备唯一",
+    "憎恨之王物品",
+    "无法修改",
+    "出售价格：1,641,970",
+    "耐久度：70/100"
+  ]
+}

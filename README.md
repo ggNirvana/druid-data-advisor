@@ -26,6 +26,25 @@ scripts/d4advisor ocr /绝对路径/装备截图.png \
   --output data/user/candidates/ring.json
 ```
 
+多张已装备截图优先使用批量模式；OCR 引擎只初始化一次，两个戒指按输入顺序映射为
+`ring_1` 和 `ring_2`。先检查文字结果，不会因为剧情或绑定信息未解析而要求查看原图：
+
+```bash
+scripts/d4advisor ocr-batch /绝对路径/*.png \
+  --output-dir data/user/candidates/batch \
+  --require-complete
+```
+
+用户确认整批物品当前均已穿戴后，增加 `--equip` 可在所有关键字段通过校验后一次性、
+原子写入人物档案并生成单份历史记录与快照：
+
+```bash
+scripts/d4advisor ocr-batch /绝对路径/*.png \
+  --output-dir data/user/candidates/batch \
+  --require-complete \
+  --equip
+```
+
 输出保留每个字段的 OCR 置信度、原文、未解析文本、图片文件名和 SHA-256 指纹；不会写入包含用户目录或聊天软件账号的完整路径。只有用户确认装备已经穿戴后才更新角色：
 
 ```bash

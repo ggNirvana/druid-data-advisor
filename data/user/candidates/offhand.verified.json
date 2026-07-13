@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "name": "伊菲的恐狼图腾",
+  "slot": "totem",
+  "rarity": "unique",
+  "ancestral": true,
+  "item_power": 900,
+  "quality": {"rank": 40, "bonus": 25, "raw_text": "40（+25）品质"},
+  "greater_affix_count": 1,
+  "implicit_affixes": [
+    {"stat": "weapon_dps", "display_name": "每秒伤害", "value": 2288, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "2,288 每秒伤害"},
+    {"stat": "hit_damage", "display_name": "每次命中伤害范围", "value": 1766, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "每次命中伤害 [1,766-2,394]", "maximum": 2394},
+    {"stat": "attacks_per_second", "display_name": "每秒攻击次数（快）", "value": 1.1, "unit": "rating", "operator": "add", "is_greater_affix": false, "raw_text": "每秒攻击次数（快）：1.10"}
+  ],
+  "affixes": [
+    {"stat": "weapon_damage", "display_name": "武器伤害", "value": 196, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "+196 武器伤害 [94-157]"},
+    {"stat": "crit_chance", "display_name": "暴击几率", "value": 16.2, "unit": "percent", "operator": "add", "is_greater_affix": false, "raw_text": "+16.2% 暴击几率 [6.5-8.5]%"},
+    {"stat": "critical_damage_multiplier", "display_name": "暴击伤害增倍", "value": 20, "unit": "percent", "operator": "multiply", "is_greater_affix": false, "raw_text": "x20% 暴击伤害增倍 [13-25]%"},
+    {"stat": "poison_damage_multiplier", "display_name": "毒素伤害增倍", "value": 14, "unit": "percent", "operator": "multiply", "is_greater_affix": false, "raw_text": "x14% 毒素伤害增倍 [7-10]%"},
+    {"stat": "item_quality", "display_name": "物品品质", "value": 15, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "+15 物品品质 [1-15]"},
+    {"stat": "crit_chance", "display_name": "暴击几率", "value": 8.3, "unit": "percent", "operator": "add", "is_greater_affix": true, "raw_text": "+8.3% 暴击几率"},
+    {"stat": "lightning_damage_multiplier", "display_name": "镶嵌：闪电伤害增倍", "value": 24, "unit": "percent", "operator": "multiply", "is_greater_affix": false, "raw_text": "x24% 闪电伤害增倍"}
+  ],
+  "tempering": [],
+  "masterworking": null,
+  "power": {"description": "灰熊狂怒现在被视作狼人技能，能使你化身为一头恐怖狼人。恐怖狼人无法获得护甲值加成，但会获得 105%[x] [100-125]% 的暴击伤害加成、105%[x] [100-125]% 的额外毒素伤害以及灵力消耗减免。此外，消灭敌人会为你治疗 5% 的生命上限。", "values": [105, 100, 125, 105, 100, 125, 5], "confidence": 0.99},
+  "required_level": 70,
+  "expansion": "憎恨之躯",
+  "review": {"required": false, "reasons": [], "greater_affix_detection": "manual_image_review"},
+  "verification": {"status": "manually_verified", "verified_at": "2026-07-13T19:32:19+08:00", "basis": "user_confirmed_equipped_screenshot"},
+  "source": {"image": "codex-clipboard-cc7c5564-285a-4405-9532-dee43c126788.png", "image_sha256": "1a1534dd111a9d06f38b88e4899272a366b6eea9d809ad81bbd5464522affa40", "ocr_candidate": "data/user/candidates/offhand.json"}
+}

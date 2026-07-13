@@ -1,0 +1,220 @@
+{
+  "affixes": [
+    {
+      "confidence": 0.9982,
+      "display_name": "暴击几率",
+      "is_greater_affix": true,
+      "operator": "add",
+      "raw_text": "+7.5%暴击几率",
+      "stat": "crit_chance",
+      "unit": "percent",
+      "value": 7.5
+    },
+    {
+      "confidence": 0.9888,
+      "display_name": "闪电伤害增倍",
+      "is_greater_affix": true,
+      "operator": "multiply",
+      "raw_text": "x20%闪电伤害增倍",
+      "stat": "lightning_damage_multiplier",
+      "unit": "percent",
+      "value": 20.0
+    },
+    {
+      "confidence": 0.9986,
+      "display_name": "冷却时间缩减",
+      "is_greater_affix": true,
+      "operator": "add",
+      "raw_text": "9.0%冷却时间缩减",
+      "stat": "cooldown_reduction",
+      "unit": "percent",
+      "value": 9.0
+    }
+  ],
+  "ancestral": true,
+  "expansion": null,
+  "greater_affix_count": 3,
+  "implicit_affixes": [
+    {
+      "confidence": 0.9996,
+      "display_name": "所有抗性",
+      "is_greater_affix": false,
+      "operator": "add",
+      "raw_text": "216所有抗性",
+      "stat": "all_resistance",
+      "unit": "flat",
+      "value": 216.0
+    }
+  ],
+  "item_power": 900,
+  "masterworking": null,
+  "minimum_confidence": 0.8491,
+  "name": "已装备",
+  "ocr_lines": [
+    {
+      "confidence": 0.9895,
+      "text": "已装备"
+    },
+    {
+      "confidence": 0.991,
+      "text": "大德鲁伊的世界瘤结"
+    },
+    {
+      "confidence": 0.9998,
+      "text": "之戒"
+    },
+    {
+      "confidence": 0.9979,
+      "text": "先祖传奇戒指"
+    },
+    {
+      "confidence": 0.9992,
+      "text": "900物品强度"
+    },
+    {
+      "confidence": 0.9448,
+      "text": "25（*+25）品质"
+    },
+    {
+      "confidence": 0.9827,
+      "text": "已变"
+    },
+    {
+      "confidence": 0.9996,
+      "text": "216所有抗性"
+    },
+    {
+      "confidence": 0.9717,
+      "text": "+139点意力+[100-121]"
+    },
+    {
+      "confidence": 0.9982,
+      "text": "+7.5%暴击几率"
+    },
+    {
+      "confidence": 0.9888,
+      "text": "x20%闪电伤害增倍"
+    },
+    {
+      "confidence": 0.9867,
+      "text": "9.4%冷却时间缩减[5.0-8.0]%"
+    },
+    {
+      "confidence": 0.9485,
+      "text": "+4至同伴技能[3-4]"
+    },
+    {
+      "confidence": 0.9986,
+      "text": "9.0%冷却时间缩减"
+    },
+    {
+      "confidence": 0.9958,
+      "text": "已刻印：每个德鲁伊形态额外获得一项被动"
+    },
+    {
+      "confidence": 0.8491,
+      "text": "加成："
+    },
+    {
+      "confidence": 0.9814,
+      "text": "人类：对远距敌人造成的伤害提高58%[x]"
+    },
+    {
+      "confidence": 0.9696,
+      "text": "[45 -60]%。"
+    },
+    {
+      "confidence": 0.9786,
+      "text": "·狼人：对近距敌人造成的暴击伤害提高"
+    },
+    {
+      "confidence": 0.8975,
+      "text": "58%[×] [45 -60]%。"
+    },
+    {
+      "confidence": 0.9795,
+      "text": "熊人：拥有决断时造成的伤害提高58%[×]"
+    },
+    {
+      "confidence": 0.9505,
+      "text": "[45 -60]%。"
+    },
+    {
+      "confidence": 0.9988,
+      "text": "+250点全元素抗性"
+    },
+    {
+      "confidence": 0.9891,
+      "text": "需要等级：70"
+    },
+    {
+      "confidence": 0.9899,
+      "text": "账号绑定"
+    },
+    {
+      "confidence": 0.9204,
+      "text": "憎恨之王物品"
+    },
+    {
+      "confidence": 0.9999,
+      "text": "无法修改"
+    },
+    {
+      "confidence": 0.9478,
+      "text": "出售价格：55，492"
+    }
+  ],
+  "power": null,
+  "rarity": "legendary",
+  "required_level": 70,
+  "review": {
+    "greater_affix_detection": "image_marker",
+    "reasons": [
+      "最低OCR置信度低于90%",
+      "存在未解析文本"
+    ],
+    "required": true
+  },
+  "schema_version": 1,
+  "slot": "ring",
+  "source": {
+    "image": "codex-clipboard-6af14ccf-a876-4ffc-b744-e90a0e6fbca9.png",
+    "ocr": {
+      "elapsed_seconds": [
+        1.9350952999998299,
+        0.20941829681396484,
+        8.384474992752075
+      ],
+      "engine": "rapidocr_onnxruntime",
+      "engine_version": "1.4.4",
+      "image_height": 976,
+      "image_sha256": "c200da366a2101410b5b2835c2b16e84ed1423d8412d128668cb3ed545b0d9b9",
+      "image_width": 610,
+      "panel_cutoff": 33,
+      "panel_text_left": 68
+    }
+  },
+  "tempering": [],
+  "unparsed_lines": [
+    "大德鲁伊的世界瘤结",
+    "之戒",
+    "25（*+25）品质",
+    "已变",
+    "+139点意力+[100-121]",
+    "9.4%冷却时间缩减[5.0-8.0]%",
+    "+4至同伴技能[3-4]",
+    "已刻印：每个德鲁伊形态额外获得一项被动",
+    "加成：",
+    "人类：对远距敌人造成的伤害提高58%[x]",
+    "[45 -60]%。",
+    "·狼人：对近距敌人造成的暴击伤害提高",
+    "58%[×] [45 -60]%。",
+    "熊人：拥有决断时造成的伤害提高58%[×]",
+    "[45 -60]%。",
+    "+250点全元素抗性",
+    "账号绑定",
+    "憎恨之王物品",
+    "无法修改",
+    "出售价格：55，492"
+  ]
+}

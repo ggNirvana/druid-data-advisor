@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "name": "黑暗嚎叫",
+  "slot": "gloves",
+  "rarity": "unique",
+  "ancestral": true,
+  "item_power": 900,
+  "quality": {"rank": 25, "bonus": 25, "raw_text": "25（+25）品质"},
+  "greater_affix_count": 0,
+  "implicit_affixes": [
+    {"stat": "armor", "display_name": "基础护甲值", "value": 1001, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "1,001 护甲值"}
+  ],
+  "affixes": [
+    {"stat": "willpower", "display_name": "意力", "value": 225, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "+225 点意力 [150-180]"},
+    {"stat": "max_life", "display_name": "生命上限", "value": 2750, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "+2,750 生命上限 [1,831-2,200]"},
+    {"stat": "crit_chance", "display_name": "暴击几率", "value": 14.9, "unit": "percent", "operator": "add", "is_greater_affix": false, "raw_text": "+14.9% 暴击几率 [6.5-8.5]%"},
+    {"stat": "critical_damage_multiplier", "display_name": "暴击伤害增倍", "value": 63, "unit": "percent", "operator": "multiply", "is_greater_affix": false, "raw_text": "x63% 暴击伤害增倍 [26-50]%"},
+    {"stat": "lucky_hit_chance", "display_name": "幸运一击几率", "value": 10, "unit": "percent", "operator": "add", "is_greater_affix": false, "raw_text": "+10.0% 幸运一击几率 [6.0-8.0]%"},
+    {"stat": "vulnerable_damage_additive", "display_name": "易伤伤害", "value": 50, "unit": "percent", "operator": "add", "is_greater_affix": false, "raw_text": "+50% 易伤伤害 [20-40]%"}
+  ],
+  "tempering": [],
+  "masterworking": null,
+  "power": {"description": "挫志咆哮现在是狼人技能。此外，挫志咆哮持续期间，你在狼人形态下造成的伤害提高 104%[x] [78-104]%。", "values": [104, 78, 104], "confidence": 0.99},
+  "required_level": 70,
+  "expansion": "憎恨之躯",
+  "review": {"required": false, "reasons": [], "greater_affix_detection": "manual_image_review"},
+  "verification": {"status": "manually_verified", "verified_at": "2026-07-13T19:32:19+08:00", "basis": "user_confirmed_equipped_screenshot"},
+  "source": {"image": "codex-clipboard-1cbc7d31-3686-471a-9968-11c54e246ca8.png", "image_sha256": "ffea09722cfc7e40077b6e173885bbbb902c25e8aad0648fc6642306f8a69754", "ocr_candidate": "data/user/candidates/gloves.json"}
+}

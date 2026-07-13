@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "name": "迪博特的意志",
+  "slot": "pants",
+  "rarity": "unique",
+  "ancestral": true,
+  "item_power": 900,
+  "quality": {"rank": 25, "bonus": 25, "raw_text": "25（+25）品质"},
+  "greater_affix_count": 1,
+  "implicit_affixes": [
+    {"stat": "armor", "display_name": "基础护甲值", "value": 2505, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "2,505 护甲值"}
+  ],
+  "affixes": [
+    {"stat": "willpower", "display_name": "意力", "value": 146, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "+146 点意力 [100-121]"},
+    {"stat": "max_life", "display_name": "生命上限", "value": 1783, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "+1,783 生命上限 [1,226-1,450]"},
+    {"stat": "armor", "display_name": "护甲值", "value": 3038, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "+3,038 护甲值 [1,963-2,450]"},
+    {"stat": "healing_received", "display_name": "受到的治疗", "value": 14.3, "unit": "percent", "operator": "add", "is_greater_affix": false, "raw_text": "+14.3% 受到的治疗 [11.0-15.0]%"},
+    {"stat": "max_life", "display_name": "生命上限", "value": 3000, "unit": "flat", "operator": "add", "is_greater_affix": true, "raw_text": "+3,000 生命上限"}
+  ],
+  "tempering": [],
+  "masterworking": null,
+  "power": {"description": "不可摧毁。在不可阻挡状态下以及之后的 5 秒内，你造成的伤害提高 20%[x] [15-20]%，并且获得 50 点主要资源回复速度。符文：珀奎（5/300）—贪食壁垒；消耗自身 300% 的资源上限，施放德鲁伊的大地壁垒技能，持续 3 秒，使你获得一层屏障（溢出：增加持续时间）。", "values": [5, 20, 15, 20, 50, 300, 3], "confidence": 0.99},
+  "required_level": 70,
+  "expansion": "憎恨之躯",
+  "review": {"required": false, "reasons": [], "greater_affix_detection": "manual_image_review"},
+  "verification": {"status": "manually_verified", "verified_at": "2026-07-13T19:32:19+08:00", "basis": "user_confirmed_equipped_screenshot"},
+  "source": {"image": "codex-clipboard-37c796b8-dc42-4c3d-85b0-857daf0f8f84.png", "image_sha256": "aa9724b0974ac1e9c754561bcd2f5823cb9a0817f9de804be4fef682ac56e584", "ocr_candidate": "data/user/candidates/pants.json"}
+}

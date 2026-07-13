@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "name": "大德鲁伊的世界瘤结之戒",
+  "slot": "ring",
+  "rarity": "legendary",
+  "ancestral": true,
+  "item_power": 900,
+  "quality": {"rank": 25, "bonus": 25, "raw_text": "25（+25）品质"},
+  "greater_affix_count": 3,
+  "implicit_affixes": [
+    {"stat": "all_resistance", "display_name": "所有抗性", "value": 216, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "216 所有抗性"}
+  ],
+  "affixes": [
+    {"stat": "willpower", "display_name": "意力", "value": 139, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "+139 点意力 [100-121]"},
+    {"stat": "crit_chance", "display_name": "暴击几率", "value": 7.5, "unit": "percent", "operator": "add", "is_greater_affix": true, "raw_text": "+7.5% 暴击几率"},
+    {"stat": "lightning_damage_multiplier", "display_name": "闪电伤害增倍", "value": 20, "unit": "percent", "operator": "multiply", "is_greater_affix": true, "raw_text": "x20% 闪电伤害增倍"},
+    {"stat": "cooldown_reduction", "display_name": "冷却时间缩减", "value": 9.4, "unit": "percent", "operator": "add", "is_greater_affix": false, "raw_text": "9.4% 冷却时间缩减 [5.0-8.0]%"},
+    {"stat": "companion_skill_ranks", "display_name": "同伴技能等级", "value": 4, "unit": "ranks", "operator": "add", "is_greater_affix": false, "raw_text": "+4 至同伴技能 [3-4]"},
+    {"stat": "cooldown_reduction", "display_name": "冷却时间缩减", "value": 9, "unit": "percent", "operator": "add", "is_greater_affix": true, "raw_text": "9.0% 冷却时间缩减"},
+    {"stat": "all_resistance", "display_name": "镶嵌：全元素抗性", "value": 250, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "+250 点全元素抗性"}
+  ],
+  "tempering": [],
+  "masterworking": null,
+  "power": {"description": "已刻印：每个德鲁伊形态额外获得一项被动加成：人类——对远距敌人造成的伤害提高 58%[x] [45-60]%；狼人——对近距敌人造成的暴击伤害提高 58%[x] [45-60]%；熊人——拥有决断时造成的伤害提高 58%[x] [45-60]%。", "values": [58, 45, 60, 58, 45, 60, 58, 45, 60], "confidence": 0.99},
+  "required_level": 70,
+  "expansion": "憎恨之躯",
+  "review": {"required": false, "reasons": [], "greater_affix_detection": "manual_image_review"},
+  "verification": {"status": "manually_verified", "verified_at": "2026-07-13T19:32:19+08:00", "basis": "user_confirmed_equipped_screenshot"},
+  "source": {"image": "codex-clipboard-6af14ccf-a876-4ffc-b744-e90a0e6fbca9.png", "image_sha256": "c200da366a2101410b5b2835c2b16e84ed1423d8412d128668cb3ed545b0d9b9", "ocr_candidate": "data/user/candidates/ring_2.json"}
+}

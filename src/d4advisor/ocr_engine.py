@@ -4,6 +4,7 @@ import hashlib
 import re
 from importlib.metadata import version
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 from PIL import Image
@@ -19,7 +20,33 @@ def _box_bounds(box: list[list[float]]) -> tuple[int, int, int, int]:
 
 def _looks_like_explicit_affix(text: str) -> bool:
     compact = re.sub(r"\s+", "", text)
-    return bool(re.match(r"^[+xX×]?\d+(?:\.\d+)?%?(?:点|级)?.+", compact)) and "物品强度" not in compact
+    return (
+        bool(re.match(r"^[+xX×]?\d+(?:\.\d+)?%?(?:点|级)?.+", compact))
+        and "物品强度" not in compact
+    )
+
+
+def _largest_component_area(mask: np.ndarray) -> int:
+    """Return the largest 8-connected component in a small boolean marker mask."""
+    visited = np.zeros(mask.shape, dtype=bool)
+    largest = 0
+    height, width = mask.shape
+    for start_y, start_x in np.argwhere(mask):
+        if visited[start_y, start_x]:
+            continue
+        visited[start_y, start_x] = True
+        stack = [(int(start_y), int(start_x))]
+        area = 0
+        while stack:
+            y, x = stack.pop()
+            area += 1
+            for next_y in range(max(0, y - 1), min(height, y + 2)):
+                for next_x in range(max(0, x - 1), min(width, x + 2)):
+                    if mask[next_y, next_x] and not visited[next_y, next_x]:
+                        visited[next_y, next_x] = True
+                        stack.append((next_y, next_x))
+        largest = max(largest, area)
+    return largest
 
 
 def _has_greater_affix_marker(image: np.ndarray, box: list[list[float]]) -> bool:
@@ -27,31 +54,43 @@ def _has_greater_affix_marker(image: np.ndarray, box: list[list[float]]) -> bool
     marker_region = image[max(0, y0 - 3) : y1 + 4, max(0, x0 - 35) : max(0, x0 - 2)]
     if marker_region.size == 0:
         return False
-    bright_warm_pixels = (
-        (marker_region[:, :, 0] > 170)
-        & (marker_region[:, :, 1] > 90)
-        & (marker_region[:, :, 2] > 70)
+    red = marker_region[:, :, 0].astype(np.int16)
+    green = marker_region[:, :, 1].astype(np.int16)
+    blue = marker_region[:, :, 2].astype(np.int16)
+    saturated_warm_pixels = (
+        (red > 155) & (green > 45) & (red - np.minimum(green, blue) > 45)
     )
-    return int(bright_warm_pixels.sum()) >= 15
+    component_area = _largest_component_area(saturated_warm_pixels)
+    return 14 <= component_area <= 30 and int(saturated_warm_pixels.sum()) <= 80
 
 
-def recognize_item_image(image_path: str | Path) -> tuple[list[OCRLine], dict[str, object]]:
-    """Run local OCR and annotate item-panel membership and GA markers."""
+def create_ocr_engine() -> Any:
+    """Create one RapidOCR engine that can be reused across a batch."""
     try:
         from rapidocr_onnxruntime import RapidOCR
     except ImportError as exc:
         raise RuntimeError(
             "RapidOCR is not installed. Run `scripts/setup-local.sh` first."
         ) from exc
+    return RapidOCR()
+
+
+def recognize_item_image(
+    image_path: str | Path, *, engine: Any | None = None
+) -> tuple[list[OCRLine], dict[str, object]]:
+    """Run local OCR and annotate item-panel membership and GA markers."""
+    engine = engine or create_ocr_engine()
 
     image_path = Path(image_path)
     image = np.asarray(Image.open(image_path).convert("RGB"))
-    result, elapsed = RapidOCR()(str(image_path))
+    result, elapsed = engine(str(image_path))
     result = result or []
 
     anchor_left_edges = []
     for box, text, _ in result:
-        if "物品强度" in text or any(label in text for label in ("传奇", "暗金", "神话", "稀有")):
+        if "物品强度" in text or any(
+            label in text for label in ("传奇", "暗金", "神话", "稀有")
+        ):
             anchor_left_edges.append(_box_bounds(box)[0])
     panel_text_left = min(anchor_left_edges, default=int(image.shape[1] * 0.20))
     panel_cutoff = max(0, panel_text_left - 35)

@@ -11,7 +11,6 @@ from typing import Any
 
 from .profile_fingerprint import character_fingerprint
 
-
 PROTECTED_FIELDS = {
     "schema_version",
     "profile_id",
@@ -80,13 +79,19 @@ def _validate_item(slot: str, item: Any) -> None:
     item_slot = item.get("slot")
     if item_slot is not None:
         if not isinstance(item_slot, str) or item_slot != EQUIPMENT_SLOT_TYPES[slot]:
-            raise ValueError(f"item slot {item_slot!r} is incompatible with equipment slot {slot}")
+            raise ValueError(
+                f"item slot {item_slot!r} is incompatible with equipment slot {slot}"
+            )
     for field in ("name", "rarity"):
         if item.get(field) is not None and not isinstance(item[field], str):
             raise ValueError(f"item.{field} must be a string or null")
     item_power = item.get("item_power")
     if item_power is not None:
-        if isinstance(item_power, bool) or not isinstance(item_power, (int, float)) or item_power < 0:
+        if (
+            isinstance(item_power, bool)
+            or not isinstance(item_power, (int, float))
+            or item_power < 0
+        ):
             raise ValueError("item.item_power must be a non-negative number or null")
     for affix_field in ("implicit_affixes", "affixes"):
         affixes = item.get(affix_field, [])
@@ -122,7 +127,10 @@ def _validate_profile(profile: Any) -> None:
     schema_version = profile.get("schema_version")
     if isinstance(schema_version, bool) or schema_version != PROFILE_SCHEMA_VERSION:
         raise ValueError(f"unsupported profile schema_version: {schema_version}")
-    if not isinstance(profile.get("profile_id"), str) or not profile["profile_id"].strip():
+    if (
+        not isinstance(profile.get("profile_id"), str)
+        or not profile["profile_id"].strip()
+    ):
         raise ValueError("profile_id must be a non-empty string")
     expected_types = {
         "build_ref": dict,
@@ -156,7 +164,9 @@ def _validate_enchantment_analysis(analysis: Any) -> None:
         or len(profile_fingerprint) != 64
         or any(character not in "0123456789abcdef" for character in profile_fingerprint)
     ):
-        raise ValueError("enchantment analysis profile_fingerprint must be a SHA-256 digest")
+        raise ValueError(
+            "enchantment analysis profile_fingerprint must be a SHA-256 digest"
+        )
     confidence = analysis.get("confidence")
     if (
         isinstance(confidence, bool)
@@ -176,7 +186,11 @@ def _validate_enchantment_analysis(analysis: Any) -> None:
         raise ValueError("enchantment analysis objectives must be a non-empty object")
     normalized_objectives: dict[str, dict[str, float]] = {}
     for objective, weights in objectives.items():
-        if not isinstance(objective, str) or not objective.strip() or not isinstance(weights, dict):
+        if (
+            not isinstance(objective, str)
+            or not objective.strip()
+            or not isinstance(weights, dict)
+        ):
             raise ValueError("enchantment analysis objectives are malformed")
         normalized_weights: dict[str, float] = {}
         for metric, weight in weights.items():
@@ -188,10 +202,14 @@ def _validate_enchantment_analysis(analysis: Any) -> None:
                 or not math.isfinite(weight)
                 or weight < 0
             ):
-                raise ValueError(f"enchantment analysis objectives.{objective} is malformed")
+                raise ValueError(
+                    f"enchantment analysis objectives.{objective} is malformed"
+                )
             normalized_weights[metric] = float(weight)
         if not math.isclose(sum(normalized_weights.values()), 1.0, abs_tol=1e-9):
-            raise ValueError(f"enchantment analysis objectives.{objective} weights must sum to 1")
+            raise ValueError(
+                f"enchantment analysis objectives.{objective} weights must sum to 1"
+            )
         normalized_objectives[objective] = normalized_weights
     if set(rankings) != set(normalized_objectives):
         raise ValueError("enchantment analysis rankings must match objectives")
@@ -202,7 +220,9 @@ def _validate_enchantment_analysis(analysis: Any) -> None:
             raise ValueError(f"enchantment analysis options[{index}] must be an object")
         for field in ("id", "slot", "replace_stat", "target_stat"):
             if not isinstance(option.get(field), str) or not option[field].strip():
-                raise ValueError(f"enchantment analysis options[{index}].{field} is required")
+                raise ValueError(
+                    f"enchantment analysis options[{index}].{field} is required"
+                )
         option_id = option["id"]
         if option_id in option_ids:
             raise ValueError(f"duplicate enchantment analysis option: {option_id}")
@@ -223,14 +243,19 @@ def _validate_enchantment_analysis(analysis: Any) -> None:
             )
         exchange = option.get("affix_exchange")
         if not isinstance(exchange, dict):
-            raise ValueError(f"enchantment analysis options[{index}].affix_exchange is required")
+            raise ValueError(
+                f"enchantment analysis options[{index}].affix_exchange is required"
+            )
         lost = exchange.get("lost")
         gained = exchange.get("gained")
         if not isinstance(lost, dict) or not isinstance(gained, dict):
             raise ValueError(
                 f"enchantment analysis options[{index}].affix_exchange needs lost and gained"
             )
-        if lost.get("stat") != option["replace_stat"] or gained.get("stat") != option["target_stat"]:
+        if (
+            lost.get("stat") != option["replace_stat"]
+            or gained.get("stat") != option["target_stat"]
+        ):
             raise ValueError(
                 f"enchantment analysis options[{index}].affix_exchange stat mismatch"
             )
@@ -260,9 +285,15 @@ def _validate_enchantment_analysis(analysis: Any) -> None:
             )
         outcomes = option.get("outcomes")
         if not isinstance(outcomes, dict) or not outcomes:
-            raise ValueError(f"enchantment analysis options[{index}].outcomes is required")
+            raise ValueError(
+                f"enchantment analysis options[{index}].outcomes is required"
+            )
         for metric, outcome in outcomes.items():
-            if not isinstance(metric, str) or not metric.strip() or not isinstance(outcome, dict):
+            if (
+                not isinstance(metric, str)
+                or not metric.strip()
+                or not isinstance(outcome, dict)
+            ):
                 raise ValueError(
                     f"enchantment analysis options[{index}].outcomes is malformed"
                 )
@@ -295,9 +326,11 @@ def _validate_enchantment_analysis(analysis: Any) -> None:
                     )
                 after_values[bound] = float(value)
             delta_percents = {
-                bound: (0.0 if value == 0 else None)
-                if current == 0
-                else (value / current - 1) * 100
+                bound: (
+                    (0.0 if value == 0 else None)
+                    if current == 0
+                    else (value / current - 1) * 100
+                )
                 for bound, value in after_values.items()
             }
             sign = 1 if direction == "higher" else -1
@@ -305,16 +338,22 @@ def _validate_enchantment_analysis(analysis: Any) -> None:
                 bound: value * sign if value is not None else None
                 for bound, value in delta_percents.items()
             }
-            finite_utilities = [value for value in utilities.values() if value is not None]
+            finite_utilities = [
+                value for value in utilities.values() if value is not None
+            ]
             expected_fields = {
                 "minimum_delta_percent": delta_percents["minimum"],
                 "expected_delta_percent": delta_percents["expected"],
                 "maximum_delta_percent": delta_percents["maximum"],
                 "minimum_utility": utilities["minimum"],
-                "utility_lower_bound": min(finite_utilities) if finite_utilities else None,
+                "utility_lower_bound": (
+                    min(finite_utilities) if finite_utilities else None
+                ),
                 "expected_utility": utilities["expected"],
                 "maximum_utility": utilities["maximum"],
-                "utility_upper_bound": max(finite_utilities) if finite_utilities else None,
+                "utility_upper_bound": (
+                    max(finite_utilities) if finite_utilities else None
+                ),
             }
             for field, expected_value in expected_fields.items():
                 actual_value = outcome.get(field)
@@ -337,7 +376,8 @@ def _validate_enchantment_analysis(analysis: Any) -> None:
         expected_tradeoffs = sorted(
             metric
             for metric, outcome in outcomes.items()
-            if outcome["expected_utility"] is not None and outcome["expected_utility"] < 0
+            if outcome["expected_utility"] is not None
+            and outcome["expected_utility"] < 0
         )
         if option.get("tradeoffs") != expected_tradeoffs:
             raise ValueError(
@@ -348,9 +388,13 @@ def _validate_enchantment_analysis(analysis: Any) -> None:
 
     for objective, entries in rankings.items():
         if not isinstance(objective, str) or not objective.strip():
-            raise ValueError("enchantment analysis ranking names must be non-empty strings")
+            raise ValueError(
+                "enchantment analysis ranking names must be non-empty strings"
+            )
         if not isinstance(entries, list) or not entries:
-            raise ValueError(f"enchantment analysis rankings.{objective} must be a non-empty array")
+            raise ValueError(
+                f"enchantment analysis rankings.{objective} must be a non-empty array"
+            )
         ranked_ids: list[str] = []
         for index, entry in enumerate(entries):
             if not isinstance(entry, dict):
@@ -432,7 +476,9 @@ def _validate_enchantment_analysis(analysis: Any) -> None:
                 ),
             }
             for field, expected_score in expected_scores.items():
-                if not math.isclose(entry[field], expected_score, rel_tol=1e-9, abs_tol=1e-9):
+                if not math.isclose(
+                    entry[field], expected_score, rel_tol=1e-9, abs_tol=1e-9
+                ):
                     raise ValueError(
                         f"enchantment analysis rankings.{objective}[{index}].{field} "
                         "does not match option outcomes"
@@ -449,8 +495,12 @@ def _validate_enchantment_analysis(analysis: Any) -> None:
                 entry["id"],
             ),
         )
-        if [entry["id"] for entry in entries] != [entry["id"] for entry in expected_order]:
-            raise ValueError(f"enchantment analysis rankings.{objective} is not correctly ordered")
+        if [entry["id"] for entry in entries] != [
+            entry["id"] for entry in expected_order
+        ]:
+            raise ValueError(
+                f"enchantment analysis rankings.{objective} is not correctly ordered"
+            )
     _validate_finite_tree(analysis, "enchantment analysis")
 
 
@@ -462,7 +512,9 @@ class CharacterStore:
         self.current_path = self.root / "current.json"
         self.history_dir = self.root / "history"
 
-    def initialize(self, *, profile_id: str, build_ref: dict[str, Any]) -> dict[str, Any]:
+    def initialize(
+        self, *, profile_id: str, build_ref: dict[str, Any]
+    ) -> dict[str, Any]:
         if self.current_path.exists():
             profile = self.load()
             self.render_snapshot()
@@ -483,7 +535,9 @@ class CharacterStore:
 
     def load(self) -> dict[str, Any]:
         if not self.current_path.exists():
-            raise FileNotFoundError("character store is not initialized; run `d4advisor profile init`")
+            raise FileNotFoundError(
+                "character store is not initialized; run `d4advisor profile init`"
+            )
         profile = json.loads(self.current_path.read_text(encoding="utf-8"))
         _validate_profile(profile)
         return profile
@@ -493,7 +547,9 @@ class CharacterStore:
             raise ValueError("profile merge input must be an object")
         protected = sorted(PROTECTED_FIELDS.intersection(fields))
         if protected:
-            raise ValueError(f"protected profile fields cannot be merged: {', '.join(protected)}")
+            raise ValueError(
+                f"protected profile fields cannot be merged: {', '.join(protected)}"
+            )
         unsupported = sorted(set(fields).difference(MERGEABLE_FIELDS))
         if unsupported:
             raise ValueError(f"unsupported profile fields: {', '.join(unsupported)}")
@@ -506,7 +562,11 @@ class CharacterStore:
         }
         for key, value in fields.items():
             if not isinstance(value, expected_types[key]):
-                raise ValueError(f"{key} must be an object" if expected_types[key] is dict else f"{key} must be an array")
+                raise ValueError(
+                    f"{key} must be an object"
+                    if expected_types[key] is dict
+                    else f"{key} must be an array"
+                )
         profile = self.load()
         for key, value in fields.items():
             if isinstance(value, dict) and isinstance(profile.get(key), dict):
@@ -516,7 +576,9 @@ class CharacterStore:
         self._save(profile, event="merge_character_fields")
         return profile
 
-    def set_item(self, slot: str, item: dict[str, Any], source: str | None = None) -> dict[str, Any]:
+    def set_item(
+        self, slot: str, item: dict[str, Any], source: str | None = None
+    ) -> dict[str, Any]:
         _validate_item(slot, item)
         profile = self.load()
         stored_item = copy.deepcopy(item)
@@ -524,6 +586,34 @@ class CharacterStore:
             stored_item["source_image"] = source
         profile.setdefault("equipment", {})[slot] = stored_item
         self._save(profile, event=f"set_item:{slot}")
+        return profile
+
+    def set_items(
+        self,
+        items: dict[str, dict[str, Any]],
+        sources: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
+        """Validate and persist a batch of equipped items in one atomic profile update."""
+        if not isinstance(items, dict) or not items:
+            raise ValueError("items must be a non-empty slot-to-item object")
+        for slot, item in items.items():
+            _validate_item(slot, item)
+        sources = sources or {}
+        unsupported_sources = sorted(set(sources).difference(items))
+        if unsupported_sources:
+            raise ValueError(
+                "item sources reference unknown batch slots: "
+                + ", ".join(unsupported_sources)
+            )
+
+        profile = self.load()
+        equipment = profile.setdefault("equipment", {})
+        for slot, item in items.items():
+            stored_item = copy.deepcopy(item)
+            if sources.get(slot):
+                stored_item["source_image"] = sources[slot]
+            equipment[slot] = stored_item
+        self._save(profile, event="set_items:" + ",".join(sorted(items)))
         return profile
 
     def set_enchantment_analysis(self, analysis: dict[str, Any]) -> dict[str, Any]:
@@ -542,7 +632,9 @@ class CharacterStore:
         return character_fingerprint(self.load())
 
     def render_snapshot(self, output_path: str | Path | None = None) -> Path:
-        return self._render_profile(self.load(), output_path or self.root / "snapshot.html")
+        return self._render_profile(
+            self.load(), output_path or self.root / "snapshot.html"
+        )
 
     def _render_profile(self, profile: dict[str, Any], output_path: str | Path) -> Path:
         from .snapshot_renderer import render_character_snapshot
@@ -562,7 +654,9 @@ class CharacterStore:
         profile["last_event"] = event
         _validate_profile(profile)
         encoded = (
-            json.dumps(profile, ensure_ascii=False, indent=2, sort_keys=True, allow_nan=False)
+            json.dumps(
+                profile, ensure_ascii=False, indent=2, sort_keys=True, allow_nan=False
+            )
             + "\n"
         )
         temporary = self.current_path.with_suffix(".json.tmp")

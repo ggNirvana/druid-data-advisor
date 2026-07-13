@@ -1,0 +1,231 @@
+{
+  "affixes": [
+    {
+      "confidence": 0.9988,
+      "display_name": "暴击几率",
+      "is_greater_affix": true,
+      "operator": "add",
+      "raw_text": "+8.3%暴击几率",
+      "stat": "crit_chance",
+      "unit": "percent",
+      "value": 8.3
+    },
+    {
+      "confidence": 0.9822,
+      "display_name": "闪电伤害增倍",
+      "is_greater_affix": true,
+      "operator": "multiply",
+      "raw_text": "x24%闪电伤害增倍",
+      "stat": "lightning_damage_multiplier",
+      "unit": "percent",
+      "value": 24.0
+    }
+  ],
+  "ancestral": true,
+  "expansion": null,
+  "greater_affix_count": 2,
+  "implicit_affixes": [],
+  "item_power": 900,
+  "masterworking": null,
+  "minimum_confidence": 0.5094,
+  "name": "已装备",
+  "ocr_lines": [
+    {
+      "confidence": 0.9842,
+      "text": "已装备"
+    },
+    {
+      "confidence": 0.9978,
+      "text": "伊菲的恐狼图腾"
+    },
+    {
+      "confidence": 0.9938,
+      "text": "先祖暗金图腾"
+    },
+    {
+      "confidence": 0.9994,
+      "text": "900物品强度"
+    },
+    {
+      "confidence": 0.9894,
+      "text": "40（+25）品质"
+    },
+    {
+      "confidence": 0.9812,
+      "text": "已变"
+    },
+    {
+      "confidence": 0.9966,
+      "text": "2,288每秒伤害"
+    },
+    {
+      "confidence": 0.9355,
+      "text": "一每次命中伤害[1,766-2,394]"
+    },
+    {
+      "confidence": 0.9759,
+      "text": "每秒攻击次数（快）：1.10"
+    },
+    {
+      "confidence": 0.9637,
+      "text": "+196武器伤害[94-157]"
+    },
+    {
+      "confidence": 0.9602,
+      "text": "+16.2% 暴击几率 [6.5 - 8.5]%"
+    },
+    {
+      "confidence": 0.9389,
+      "text": "x20%暴击伤害增倍[13-25]%"
+    },
+    {
+      "confidence": 0.9455,
+      "text": "×14%毒素伤害增倍[7-10]%"
+    },
+    {
+      "confidence": 0.9397,
+      "text": "+15 物品品质 [1 - 15]"
+    },
+    {
+      "confidence": 0.9988,
+      "text": "+8.3%暴击几率"
+    },
+    {
+      "confidence": 0.9947,
+      "text": "灰熊狂怒现在被视作狼人技能，能使你化身"
+    },
+    {
+      "confidence": 0.9986,
+      "text": "为一头恐怖狼人。恐怖狼人无法获得护甲值"
+    },
+    {
+      "confidence": 0.9476,
+      "text": "加成，但会获得105%[×][100-125]%的暴"
+    },
+    {
+      "confidence": 0.5094,
+      "text": "★"
+    },
+    {
+      "confidence": 0.9624,
+      "text": "击伤害加成、105%[×][100-125]%的额外"
+    },
+    {
+      "confidence": 0.9972,
+      "text": "毒素伤害以及灵力消耗减免。此外，消灭敌"
+    },
+    {
+      "confidence": 0.9706,
+      "text": "人会为你治疗 5% 的生命上限。"
+    },
+    {
+      "confidence": 0.9822,
+      "text": "x24%闪电伤害增倍"
+    },
+    {
+      "confidence": 0.9862,
+      "text": "菲亚克拉·盖尔的德鲁伊与自然和谐共处。而伊菲之"
+    },
+    {
+      "confidence": 0.9754,
+      "text": "爪则走上了另一条路。他们将灵魂献给了荒野，变得"
+    },
+    {
+      "confidence": 0.9963,
+      "text": "兽性多过人性。"
+    },
+    {
+      "confidence": 0.9938,
+      "text": "需要等级：70"
+    },
+    {
+      "confidence": 0.9977,
+      "text": "账号绑定"
+    },
+    {
+      "confidence": 0.9955,
+      "text": "仅限"
+    },
+    {
+      "confidence": 0.9889,
+      "text": "装备唯一"
+    },
+    {
+      "confidence": 0.9091,
+      "text": "憎恨之王物品"
+    },
+    {
+      "confidence": 1.0,
+      "text": "无法修改"
+    },
+    {
+      "confidence": 0.9437,
+      "text": "出售价格：129，435"
+    },
+    {
+      "confidence": 0.9675,
+      "text": "耐久度：70/100"
+    }
+  ],
+  "power": null,
+  "rarity": "unique",
+  "required_level": 70,
+  "review": {
+    "greater_affix_detection": "image_marker",
+    "reasons": [
+      "最低OCR置信度低于90%",
+      "存在未解析文本"
+    ],
+    "required": true
+  },
+  "schema_version": 1,
+  "slot": "totem",
+  "source": {
+    "image": "codex-clipboard-cc7c5564-285a-4405-9532-dee43c126788.png",
+    "ocr": {
+      "elapsed_seconds": [
+        2.321178300000156,
+        0.26912522315979004,
+        9.680353879928589
+      ],
+      "engine": "rapidocr_onnxruntime",
+      "engine_version": "1.4.4",
+      "image_height": 1087,
+      "image_sha256": "1a1534dd111a9d06f38b88e4899272a366b6eea9d809ad81bbd5464522affa40",
+      "image_width": 678,
+      "panel_cutoff": 34,
+      "panel_text_left": 69
+    }
+  },
+  "tempering": [],
+  "unparsed_lines": [
+    "伊菲的恐狼图腾",
+    "40（+25）品质",
+    "已变",
+    "2,288每秒伤害",
+    "一每次命中伤害[1,766-2,394]",
+    "每秒攻击次数（快）：1.10",
+    "+196武器伤害[94-157]",
+    "+16.2% 暴击几率 [6.5 - 8.5]%",
+    "x20%暴击伤害增倍[13-25]%",
+    "×14%毒素伤害增倍[7-10]%",
+    "+15 物品品质 [1 - 15]",
+    "灰熊狂怒现在被视作狼人技能，能使你化身",
+    "为一头恐怖狼人。恐怖狼人无法获得护甲值",
+    "加成，但会获得105%[×][100-125]%的暴",
+    "★",
+    "击伤害加成、105%[×][100-125]%的额外",
+    "毒素伤害以及灵力消耗减免。此外，消灭敌",
+    "人会为你治疗 5% 的生命上限。",
+    "菲亚克拉·盖尔的德鲁伊与自然和谐共处。而伊菲之",
+    "爪则走上了另一条路。他们将灵魂献给了荒野，变得",
+    "兽性多过人性。",
+    "账号绑定",
+    "仅限",
+    "装备唯一",
+    "憎恨之王物品",
+    "无法修改",
+    "出售价格：129，435",
+    "耐久度：70/100"
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "name": "盈月当空",
+  "slot": "weapon",
+  "rarity": "unique",
+  "ancestral": true,
+  "item_power": 900,
+  "quality": {"rank": 25, "bonus": 25, "raw_text": "25（+25）品质"},
+  "greater_affix_count": 3,
+  "implicit_affixes": [
+    {"stat": "weapon_dps", "display_name": "每秒伤害", "value": 2072, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "2,072 每秒伤害"},
+    {"stat": "hit_damage", "display_name": "每次命中伤害范围", "value": 1570, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "每次命中伤害 [1,570-2,198]", "maximum": 2198},
+    {"stat": "attacks_per_second", "display_name": "每秒攻击次数（快）", "value": 1.1, "unit": "rating", "operator": "add", "is_greater_affix": false, "raw_text": "每秒攻击次数（快）：1.10"}
+  ],
+  "affixes": [
+    {"stat": "willpower", "display_name": "意力", "value": 270, "unit": "flat", "operator": "add", "is_greater_affix": true, "raw_text": "+270 点意力"},
+    {"stat": "max_life", "display_name": "生命上限", "value": 3300, "unit": "flat", "operator": "add", "is_greater_affix": true, "raw_text": "+3,300 生命上限"},
+    {"stat": "damage_multiplier", "display_name": "全伤害增倍", "value": 13, "unit": "percent", "operator": "multiply", "is_greater_affix": false, "raw_text": "x13% 全伤害增倍 [6-10]%"},
+    {"stat": "shred_ranks", "display_name": "利爪撕扯技能等级", "value": 4, "unit": "ranks", "operator": "add", "is_greater_affix": false, "raw_text": "+4 至利爪撕扯 [3-4]"},
+    {"stat": "crit_chance", "display_name": "暴击几率", "value": 8, "unit": "percent", "operator": "add", "is_greater_affix": true, "raw_text": "+8.0% 暴击几率"},
+    {"stat": "lightning_damage_multiplier", "display_name": "镶嵌：闪电伤害增倍", "value": 28, "unit": "percent", "operator": "multiply", "is_greater_affix": false, "raw_text": "x28% 闪电伤害增倍"}
+  ],
+  "tempering": [],
+  "masterworking": null,
+  "power": {"description": "利爪撕扯造成的伤害提高 78%[x] [58-78]%，并且利爪撕扯有 33% 的几率施展一次额外攻击，至多施展 4 次。", "values": [78, 58, 78, 33, 4], "confidence": 0.99},
+  "required_level": 70,
+  "expansion": "憎恨之躯",
+  "review": {"required": false, "reasons": [], "greater_affix_detection": "manual_image_review"},
+  "verification": {"status": "manually_verified", "verified_at": "2026-07-13T19:32:19+08:00", "basis": "user_confirmed_equipped_screenshot"},
+  "source": {"image": "codex-clipboard-fa49e6c7-e3ae-4832-a68a-eedf1853b4dd.png", "image_sha256": "50c5269aa68afab4e607c9a04200e96a64588a761b8d707f2aa96948db174d0f", "ocr_candidate": "data/user/candidates/weapon.json"}
+}

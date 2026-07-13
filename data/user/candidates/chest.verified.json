@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "name": "衰弱毒素之厄运胸甲",
+  "slot": "chest",
+  "rarity": "legendary",
+  "ancestral": true,
+  "item_power": 900,
+  "quality": {"rank": 25, "bonus": 25, "raw_text": "25（+25）品质"},
+  "greater_affix_count": 3,
+  "implicit_affixes": [
+    {"stat": "armor", "display_name": "基础护甲值", "value": 3506, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "3,506 护甲值"}
+  ],
+  "affixes": [
+    {"stat": "willpower", "display_name": "意力", "value": 242, "unit": "flat", "operator": "add", "is_greater_affix": true, "raw_text": "+242 点意力"},
+    {"stat": "max_life", "display_name": "生命上限", "value": 1813, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "+1,813 生命上限 [1,226-1,450]"},
+    {"stat": "healing_received", "display_name": "受到的治疗", "value": 22.5, "unit": "percent", "operator": "add", "is_greater_affix": true, "raw_text": "+22.5% 受到的治疗"},
+    {"stat": "poison_resistance", "display_name": "毒素抗性", "value": 756, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "+756 点毒素抗性 [524-630]"},
+    {"stat": "all_attributes", "display_name": "全属性", "value": 108, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "+108 点全属性 [75-100]"},
+    {"stat": "max_life", "display_name": "生命上限", "value": 2250, "unit": "flat", "operator": "add", "is_greater_affix": true, "raw_text": "+2,250 生命上限"}
+  ],
+  "tempering": [],
+  "masterworking": null,
+  "power": {"description": "已刻印：你获得 21.0% [20.0-30.0]% 伤害减免，并且中毒的敌人对你造成的伤害降低 15%。符文：莫尼莫特（100/150）—轻盈暗影；施放 2 个机动或骇术技能（2 次）时，获得游侠暗影帷幕技能的 1 个暗影，每个暗影都会降低受到的伤害（溢出：获得多个暗影）。", "values": [21, 20, 30, 15], "confidence": 0.99},
+  "required_level": 70,
+  "expansion": null,
+  "review": {"required": false, "reasons": [], "greater_affix_detection": "manual_image_review"},
+  "verification": {"status": "manually_verified", "verified_at": "2026-07-13T19:32:19+08:00", "basis": "user_confirmed_equipped_screenshot"},
+  "source": {"image": "codex-clipboard-38033951-cba8-4d99-bc38-1c01d77fdb57.png", "image_sha256": "4c58b92c06696ab12d8aca3fee83cf5e375c417e0c8eed18a125fd73ae25f17f", "ocr_candidate": "data/user/candidates/chest.json"}
+}

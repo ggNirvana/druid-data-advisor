@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "name": "凶邪新月",
+  "slot": "amulet",
+  "rarity": "unique",
+  "ancestral": true,
+  "item_power": 900,
+  "quality": {"rank": 26, "bonus": 25, "raw_text": "26（+25）品质"},
+  "greater_affix_count": 1,
+  "implicit_affixes": [
+    {"stat": "all_resistance", "display_name": "所有抗性", "value": 290, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "290 所有抗性"}
+  ],
+  "affixes": [
+    {"stat": "willpower", "display_name": "意力", "value": 217, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "+217 点意力 [150-180]"},
+    {"stat": "critical_damage_multiplier", "display_name": "暴击伤害增倍", "value": 48, "unit": "percent", "operator": "multiply", "is_greater_affix": false, "raw_text": "x48% 暴击伤害增倍 [26-50]%"},
+    {"stat": "lightning_damage_multiplier", "display_name": "闪电伤害增倍", "value": 41, "unit": "percent", "operator": "multiply", "is_greater_affix": false, "raw_text": "x41% 闪电伤害增倍 [14-24]%"},
+    {"stat": "cooldown_reduction", "display_name": "冷却时间缩减", "value": 10.1, "unit": "percent", "operator": "add", "is_greater_affix": false, "raw_text": "10.1% 冷却时间缩减 [5.0-8.0]%"},
+    {"stat": "item_quality", "display_name": "物品品质", "value": 1, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "+1 物品品质 [1-15]"},
+    {"stat": "vulnerable_damage_additive", "display_name": "易伤伤害", "value": 60, "unit": "percent", "operator": "add", "is_greater_affix": true, "raw_text": "+60% 易伤伤害"},
+    {"stat": "all_resistance", "display_name": "镶嵌：全元素抗性", "value": 375, "unit": "flat", "operator": "add", "is_greater_affix": false, "raw_text": "+375 点全元素抗性"}
+  ],
+  "tempering": [],
+  "masterworking": null,
+  "power": {"description": "当你变身为狼人时会自动施放血性狂吼，并且在狼人形态下每 4 秒施放一次。此外，每当触发血性狂吼时，你造成的伤害提高 60%[x] [40-60]%，持续 4 秒。你的风暴技能伤害会使敌人陷入易伤状态，持续 4 秒；你对易伤敌人造成的伤害提高 28.5%[x] [22.5-30.0]%。", "values": [4, 60, 40, 60, 4, 4, 28.5, 22.5, 30], "confidence": 0.99},
+  "required_level": 70,
+  "expansion": "憎恨之躯",
+  "review": {"required": false, "reasons": [], "greater_affix_detection": "manual_image_review"},
+  "verification": {"status": "manually_verified", "verified_at": "2026-07-13T19:32:19+08:00", "basis": "user_confirmed_equipped_screenshot"},
+  "source": {"image": "codex-clipboard-968c2dc1-68de-4357-957a-500dc1e7d997.png", "image_sha256": "6d7f5a81843b311fe42a6ed221a801f29f11a612429d1b4b7e13232f7f73444a", "ocr_candidate": "data/user/candidates/amulet.json"}
+}
