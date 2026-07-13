@@ -58,6 +58,87 @@ Pass matching ledgers and defense states to `calc compare`:
 
 Build both sides from source-level stats. Do not add the candidate to a town panel that still contains the equipped item. Keep scenario conditions identical.
 
+## Enchantment analysis
+
+Pass complete before/after outcomes to `calc enchant`; every option must remove the old affix before
+adding the proposed roll:
+
+```json
+{
+  "ruleset": "3.1.0.72592",
+  "scenario": "高层常态",
+  "profile_fingerprint": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "confidence": 0.9,
+  "stats": {"attack_speed_bonus": 0.48},
+  "breakpoints": {
+    "attack_speed": {"metric": "attack_speed_bonus", "thresholds": [0.25, 0.5]}
+  },
+  "objectives": {
+    "damage_priority": {"weights": {"expected_single_hit": 1.0}},
+    "survival_priority": {"weights": {"expected_single_hit": 0.3, "physical_ehp": 0.7}}
+  },
+  "options": [{
+    "id": "ring_2_cdr_to_life",
+    "slot": "ring_2",
+    "replace_stat": "cooldown_reduction",
+    "target_stat": "max_life",
+    "replace_roll": {"value": 10, "unit": "percent"},
+    "target_roll": {
+      "minimum": 800,
+      "expected": 1000,
+      "maximum": 1200,
+      "unit": "flat"
+    },
+    "outcomes": {
+      "expected_single_hit": {
+        "current": 100000,
+        "after": {"minimum": 98000, "expected": 99000, "maximum": 100000}
+      },
+      "physical_ehp": {
+        "current": 20000,
+        "after": {"minimum": 21000, "expected": 21500, "maximum": 22000}
+      }
+    },
+    "after_stats": {
+      "minimum": {"attack_speed_bonus": 0.48},
+      "expected": {"attack_speed_bonus": 0.48},
+      "maximum": {"attack_speed_bonus": 0.48}
+    }
+  }]
+}
+```
+
+- `after.expected` is a declared planning point. Call it an RNG expectation only when the roll
+  distribution is calibrated; otherwise state the midpoint assumption.
+- Objective weights are normalized by the calculator. Scores are weighted percentage changes, not
+  hidden game ratings.
+- Use `direction: "lower"` only for outcome metrics where a smaller final value is beneficial.
+- Outcome keys `minimum`, `expected`, and `maximum` identify the target affix's three roll points;
+  they do not promise ascending final metric values. A lower-is-better metric may legitimately
+  produce descending results across those points.
+- Preserve the full range when the offered enchantment roll is not known yet.
+- `replace_roll` and `target_roll` preserve the game's displayed roll (`10` means `10%`). They are
+  audit evidence, not multiplier factors. Convert them separately when rebuilding each outcome.
+- Every option must use the same `current` and `direction` for a shared outcome metric. The
+  calculator rejects mismatched baselines instead of ranking incomparable candidates.
+- When breakpoints are declared, each option must provide `after_stats.minimum`, `.expected`, and
+  `.maximum` with every breakpoint metric present. These are complete post-replacement breakpoint
+  states, not overlays; use `0` when removing an affix leaves a known zero value and `null` only for
+  a genuinely unknown value.
+- Top-level `confidence` describes common evidence. Each candidate confidence is the lower of that
+  common value and its own declared confidence; a weak unrelated candidate does not lower the
+  reported common confidence for every other option.
+- `profile save-enchantment-analysis --input RESULT_FILE` accepts the calculator result, validates
+  candidate/ranking references, and stores it under analysis only. It never confirms or changes the
+  equipped item's enchantment.
+- Generate `profile_fingerprint` immediately before building candidates. The calculator carries it
+  into the result; saving rejects a mismatched current character, and the snapshot marks an older
+  result stale after equipment, stats, paragon overrides, or fixed-build identity changes.
+- Candidate legality and roll ranges must come from a matching cached enchantment pool or the
+  current item's in-game Occultist “可能属性” list. When
+  `data/reference/enchantment-rules.json` reports `candidate_pool.status=not_cached`, that screenshot
+  is a required input rather than an optional confidence improvement.
+
 ## Panel audit
 
 Pass `stats` and scenario-specific `rules` to `calc audit-panel`:

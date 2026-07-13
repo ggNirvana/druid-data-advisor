@@ -6,7 +6,7 @@
 - `data/user/current.json`：用户当前角色快照；每次更新自动保存到 `data/user/history/`；
 - `data/user/candidates/`：尚未确认穿戴的截图装备，不会自动覆盖当前装备。
 
-仓库内的 `skills/d4-druid-advisor/` 负责装备比较、最大单击和人物面板诊断工作流；Python工具只执行可复算的原子运算。
+仓库内的 `skills/d4-druid-advisor/` 负责装备比较、最大单击、人物面板诊断和附魔建议工作流；Python工具只执行可复算的原子运算。
 
 ## 安装
 
@@ -41,6 +41,7 @@ scripts/d4advisor profile set-item \
 scripts/d4advisor profile init
 scripts/d4advisor profile show
 scripts/d4advisor profile merge data/inbox/character-stats.json
+scripts/d4advisor profile fingerprint
 scripts/d4advisor profile render
 ```
 
@@ -63,10 +64,24 @@ scripts/d4advisor calc chain-attacks --probability 0.33 --max-extra 4
 # 10000生命，两层20%和30%独立减伤
 scripts/d4advisor calc ehp --life 10000 --reductions 0.2 0.3
 
-# 单一伤害事件、装备A/B与人物面板审计
+# 单一伤害事件、装备A/B、人物面板审计与附魔候选排名
 scripts/d4advisor calc damage-event --input data/inbox/damage-ledger.json
 scripts/d4advisor calc compare --input data/inbox/comparison.json
 scripts/d4advisor calc audit-panel --input data/inbox/panel-audit.json
+scripts/d4advisor calc enchant --input data/inbox/enchantment-options.json \
+  --output data/inbox/enchantment-result.json
+
+# 可选：仅把附魔分析写入快照，不会改动当前穿戴与已确认附魔
+scripts/d4advisor profile save-enchantment-analysis \
+  --input data/inbox/enchantment-result.json
+```
+
+附魔计算输入必须包含刚由 `profile fingerprint` 产生的人物基线指纹。当本地版本数据未缓存
+完整附魔池时，使用秘术师“可能属性”列表截图作为合法候选和 roll 范围的真值来源：
+
+```bash
+scripts/d4advisor ocr-text /绝对路径/可能属性列表.png \
+  --output data/inbox/enchantment-affix-list.json
 ```
 
 这些基础函数不会猜测未公开游戏数据。当前阶段支持版本化伤害、DPS、装备差值和 EHP；具体魔渊期望层数预测尚未实现。

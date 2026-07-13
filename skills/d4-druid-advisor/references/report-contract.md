@@ -24,6 +24,19 @@ Report expected largest single event and theoretical ceiling as separate numbers
 
 Report the top three issues in priority order. For each, state current value, target/cap or breakpoint, exact gap/overcap, expected improvement, and a concrete temper/masterworking action. Finish with damage-first and high-tier-survival paths.
 
+## Enchantment recommendation
+
+For every legal candidate show slot, removed affix, target affix, minimum/declared-expected/maximum
+roll outcome, damage/DPS delta, physical/elemental EHP delta, breakpoint changes, confidence, and
+tradeoffs. Give separate damage-first and high-tier-survival rankings. State which affix must not be
+removed and what missing item detail could reverse the recommendation. Breakpoint changes must show
+minimum, declared-expected, and maximum-roll states when only part of the roll range crosses a tier.
+The lost roll and gained roll range are mandatory evidence, not inferred only from final DPS/EHP.
+Saved snapshot advice must show its own ruleset and scenario. Mark it expired when that ruleset no
+longer matches the current snapshot lock, or when its character fingerprint no longer matches the
+current equipment/panel baseline. State whether legal candidates came from cached rules or the
+in-game Occultist list.
+
 ## Missing information
 
 Ask for the smallest specific screenshot or field set that can resolve the decision. Do not ask for the whole character again.

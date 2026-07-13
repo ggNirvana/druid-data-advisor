@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import math
+import re
 from typing import Any
 
 from .calculations import effective_health, expected_chained_attacks, stack_damage_reductions
@@ -422,6 +423,304 @@ def _breakpoint_states(
             )
         results[name] = result
     return results
+
+
+def _outcome_delta_percent(current: float, after: float) -> float | None:
+    if current == 0:
+        return 0.0 if after == 0 else None
+    return (after / current - 1) * 100
+
+
+def _required_roll_value(value: Any, path: str) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        raise ValueError(f"{path} must be an object")
+    unit = _required_text(value, "unit")
+    return {
+        "value": _finite_number(value.get("value"), f"{path}.value", minimum=0),
+        "unit": unit,
+    }
+
+
+def _required_roll_range(value: Any, path: str) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        raise ValueError(f"{path} must be an object")
+    result = {
+        bound: _finite_number(value.get(bound), f"{path}.{bound}", minimum=0)
+        for bound in ("minimum", "expected", "maximum")
+    }
+    if not result["minimum"] <= result["expected"] <= result["maximum"]:
+        raise ValueError(f"{path} requires minimum <= expected <= maximum")
+    result["unit"] = _required_text(value, "unit")
+    return result
+
+
+def _contains_nested_value(values: dict[str, Any], dotted_path: str) -> bool:
+    current: Any = values
+    for segment in dotted_path.split("."):
+        if not isinstance(current, dict) or segment not in current:
+            return False
+        current = current[segment]
+    return True
+
+
+def analyze_enchantment_options(payload: dict[str, Any]) -> dict[str, Any]:
+    """Rank legal enchantment replacements from complete before/after outcomes."""
+    ruleset = _required_text(payload, "ruleset")
+    scenario = _required_text(payload, "scenario")
+    profile_fingerprint = _required_text(payload, "profile_fingerprint")
+    if re.fullmatch(r"[0-9a-f]{64}", profile_fingerprint) is None:
+        raise ValueError("profile_fingerprint must be a lowercase SHA-256 hex digest")
+    stats = payload.get("stats", {})
+    if not isinstance(stats, dict):
+        raise ValueError("stats must be an object")
+    breakpoint_definitions = payload.get("breakpoints", {})
+    if not isinstance(breakpoint_definitions, dict):
+        raise ValueError("breakpoints must be an object")
+    baseline_breakpoints = _breakpoint_states(stats, breakpoint_definitions)
+
+    objectives = payload.get("objectives")
+    if not isinstance(objectives, dict) or not objectives:
+        raise ValueError("objectives must be a non-empty object")
+    normalized_objectives: dict[str, dict[str, float]] = {}
+    for objective_name, definition in objectives.items():
+        if not isinstance(definition, dict) or not isinstance(definition.get("weights"), dict):
+            raise ValueError(f"objectives.{objective_name}.weights must be an object")
+        raw_weights = {
+            metric: _finite_number(
+                weight,
+                f"objectives.{objective_name}.weights.{metric}",
+                minimum=0,
+            )
+            for metric, weight in definition["weights"].items()
+        }
+        weight_total = sum(raw_weights.values())
+        if not math.isfinite(weight_total) or weight_total <= 0:
+            raise ValueError(f"objectives.{objective_name} must have a positive weight")
+        normalized_objectives[objective_name] = {
+            metric: weight / weight_total for metric, weight in raw_weights.items()
+        }
+
+    options = payload.get("options")
+    if not isinstance(options, list) or not options:
+        raise ValueError("options must be a non-empty array")
+    option_results: list[dict[str, Any]] = []
+    option_ids: set[str] = set()
+    common_confidence = _probability(payload.get("confidence", 1), "confidence")
+    candidate_confidences: list[float] = []
+    metric_semantics: dict[str, dict[str, Any]] = {}
+    for option_index, option in enumerate(options):
+        if not isinstance(option, dict):
+            raise ValueError(f"options[{option_index}] must be an object")
+        option_id = _required_text(option, "id")
+        if option_id in option_ids:
+            raise ValueError(f"duplicate enchantment option id: {option_id}")
+        option_ids.add(option_id)
+        slot = _required_text(option, "slot")
+        replace_stat = _required_text(option, "replace_stat")
+        target_stat = _required_text(option, "target_stat")
+        declared_option_confidence = _probability(
+            option.get("confidence", 1), f"options[{option_index}].confidence"
+        )
+        option_confidence = min(common_confidence, declared_option_confidence)
+        candidate_confidences.append(option_confidence)
+        replace_roll = _required_roll_value(
+            option.get("replace_roll"), f"options[{option_index}].replace_roll"
+        )
+        target_roll = _required_roll_range(
+            option.get("target_roll"), f"options[{option_index}].target_roll"
+        )
+        outcomes = option.get("outcomes")
+        if not isinstance(outcomes, dict) or not outcomes:
+            raise ValueError(f"options[{option_index}].outcomes must be a non-empty object")
+
+        outcome_results: dict[str, Any] = {}
+        for metric, outcome in outcomes.items():
+            if not isinstance(outcome, dict) or not isinstance(outcome.get("after"), dict):
+                raise ValueError(f"options[{option_index}].outcomes.{metric}.after must be an object")
+            current = _finite_number(
+                outcome.get("current"),
+                f"options[{option_index}].outcomes.{metric}.current",
+                minimum=0,
+            )
+            after = outcome["after"]
+            minimum = _finite_number(
+                after.get("minimum"),
+                f"options[{option_index}].outcomes.{metric}.after.minimum",
+                minimum=0,
+            )
+            expected = _finite_number(
+                after.get("expected"),
+                f"options[{option_index}].outcomes.{metric}.after.expected",
+                minimum=0,
+            )
+            maximum = _finite_number(
+                after.get("maximum"),
+                f"options[{option_index}].outcomes.{metric}.after.maximum",
+                minimum=0,
+            )
+            direction = outcome.get("direction", "higher")
+            if direction not in {"higher", "lower"}:
+                raise ValueError(
+                    f"options[{option_index}].outcomes.{metric}.direction must be higher or lower"
+                )
+            semantics = metric_semantics.get(metric)
+            if semantics is None:
+                metric_semantics[metric] = {"current": current, "direction": direction}
+            else:
+                if not math.isclose(current, semantics["current"], rel_tol=1e-12, abs_tol=1e-12):
+                    raise ValueError(
+                        f"all options for {metric} must use the same current baseline"
+                    )
+                if direction != semantics["direction"]:
+                    raise ValueError(
+                        f"all options for {metric} must use the same direction"
+                    )
+            delta_percents = {
+                "minimum": _outcome_delta_percent(current, minimum),
+                "expected": _outcome_delta_percent(current, expected),
+                "maximum": _outcome_delta_percent(current, maximum),
+            }
+            sign = 1 if direction == "higher" else -1
+            utilities = {
+                name: value * sign if value is not None else None
+                for name, value in delta_percents.items()
+            }
+            finite_utilities = [value for value in utilities.values() if value is not None]
+            outcome_results[metric] = {
+                "current": current,
+                "after": {
+                    "minimum": minimum,
+                    "expected": expected,
+                    "maximum": maximum,
+                },
+                "direction": direction,
+                "minimum_delta_percent": delta_percents["minimum"],
+                "expected_delta_percent": delta_percents["expected"],
+                "maximum_delta_percent": delta_percents["maximum"],
+                "expected_absolute_delta": expected - current,
+                "minimum_utility": utilities["minimum"],
+                "utility_lower_bound": min(finite_utilities) if finite_utilities else None,
+                "expected_utility": utilities["expected"],
+                "maximum_utility": utilities["maximum"],
+                "utility_upper_bound": max(finite_utilities) if finite_utilities else None,
+            }
+
+        option_result: dict[str, Any] = {
+            "id": option_id,
+            "slot": slot,
+            "replace_stat": replace_stat,
+            "target_stat": target_stat,
+            "confidence": option_confidence,
+            "outcomes": outcome_results,
+            "notes": option.get("notes"),
+            "affix_exchange": {
+                "lost": {"stat": replace_stat, **replace_roll},
+                "gained": {"stat": target_stat, **target_roll},
+            },
+        }
+        if replace_stat == target_stat and replace_roll["unit"] == target_roll["unit"]:
+            option_result["affix_exchange"]["net_same_stat"] = {
+                bound: target_roll[bound] - replace_roll["value"]
+                for bound in ("minimum", "expected", "maximum")
+            } | {"unit": target_roll["unit"]}
+        after_stats = option.get("after_stats")
+        if breakpoint_definitions and not isinstance(after_stats, dict):
+            raise ValueError(
+                f"options[{option_index}].after_stats must provide complete minimum, expected, "
+                "and maximum breakpoint states"
+            )
+        if after_stats is not None:
+            if not isinstance(after_stats, dict):
+                raise ValueError(f"options[{option_index}].after_stats must be an object")
+            bound_breakpoints: dict[str, Any] = {}
+            for bound in ("minimum", "expected", "maximum"):
+                bound_stats = after_stats.get(bound)
+                if not isinstance(bound_stats, dict):
+                    raise ValueError(
+                        f"options[{option_index}].after_stats.{bound} must be an object"
+                    )
+                for breakpoint_name, definition in breakpoint_definitions.items():
+                    metric_path = _required_text(definition, "metric")
+                    if not _contains_nested_value(bound_stats, metric_path):
+                        raise ValueError(
+                            f"options[{option_index}].after_stats.{bound} must include "
+                            f"breakpoint metric {breakpoint_name}: {metric_path}"
+                        )
+                bound_breakpoints[bound] = _breakpoint_states(
+                    bound_stats,
+                    breakpoint_definitions,
+                    baseline=baseline_breakpoints,
+                )
+            option_result["breakpoints"] = bound_breakpoints
+        option_result["tradeoffs"] = sorted(
+            metric
+            for metric, outcome in outcome_results.items()
+            if outcome["expected_utility"] is not None and outcome["expected_utility"] < 0
+        )
+        option_results.append(option_result)
+
+    rankings: dict[str, list[dict[str, Any]]] = {}
+    for objective_name, weights in normalized_objectives.items():
+        ranked_options = []
+        for option in option_results:
+            weighted_lower: list[float] = []
+            weighted_expected: list[float] = []
+            weighted_upper: list[float] = []
+            for metric, weight in weights.items():
+                if metric not in option["outcomes"]:
+                    raise ValueError(
+                        f"option {option['id']} is missing outcome required by {objective_name}: {metric}"
+                    )
+                outcome = option["outcomes"][metric]
+                if any(
+                    outcome[field] is None
+                    for field in (
+                        "minimum_utility",
+                        "expected_utility",
+                        "maximum_utility",
+                    )
+                ):
+                    raise ValueError(
+                        f"option {option['id']} outcome {metric} needs a positive current value "
+                        "for every non-zero roll bound"
+                    )
+                weighted_lower.append(weight * outcome["utility_lower_bound"])
+                weighted_expected.append(weight * outcome["expected_utility"])
+                weighted_upper.append(weight * outcome["utility_upper_bound"])
+            ranked_options.append(
+                {
+                    "id": option["id"],
+                    "slot": option["slot"],
+                    "replace_stat": option["replace_stat"],
+                    "target_stat": option["target_stat"],
+                    "score_lower_bound": math.fsum(weighted_lower),
+                    "score_expected": math.fsum(weighted_expected),
+                    "score_upper_bound": math.fsum(weighted_upper),
+                    "confidence": option["confidence"],
+                    "tradeoffs": option["tradeoffs"],
+                }
+            )
+        ranked_options.sort(
+            key=lambda option: (
+                -option["score_expected"],
+                -option["score_lower_bound"],
+                option["id"],
+            )
+        )
+        rankings[objective_name] = ranked_options
+
+    return {
+        "ruleset": ruleset,
+        "scenario": scenario,
+        "profile_fingerprint": profile_fingerprint,
+        "confidence": common_confidence,
+        "minimum_candidate_confidence": min(candidate_confidences),
+        "objectives": normalized_objectives,
+        "metric_semantics": metric_semantics,
+        "baseline_breakpoints": baseline_breakpoints,
+        "options": option_results,
+        "rankings": rankings,
+    }
 
 
 def audit_panel(stats: dict[str, Any], rules: dict[str, Any]) -> dict[str, Any]:

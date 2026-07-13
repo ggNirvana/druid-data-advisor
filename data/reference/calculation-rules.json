@@ -3,6 +3,8 @@
     "capped_chained_attacks": "sum(p^i for i=0..max_extra_attacks)",
     "damage_reduction_stack": "1 - product(1 - reduction_i)",
     "effective_health": "(life + active_barrier + other_absorption) / (1 - applicable_total_damage_reduction)",
+    "enchantment_objective_score": "sum(normalized_weight_i * outcome_delta_percent_i)",
+    "enchantment_profile_fingerprint": "sha256(canonical_json(profile_id, build_ref, stats, equipment, paragon_overrides))",
     "expected_conditional_factor": "1 + condition_uptime * (total_factor - 1)",
     "expected_crit_factor": "1 + crit_chance * (crit_multiplier - 1)",
     "expected_single_hit": "weapon_damage * skill_coefficient * (1 + additive_bonus) * product(expected_independent_factor_i) * expected_crit_factor * expected_vulnerable_factor",

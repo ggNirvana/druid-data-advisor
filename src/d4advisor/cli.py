@@ -6,7 +6,12 @@ import os
 from pathlib import Path
 from typing import Any
 
-from .advisor_engine import audit_panel, calculate_damage_event, compare_loadouts
+from .advisor_engine import (
+    analyze_enchantment_options,
+    audit_panel,
+    calculate_damage_event,
+    compare_loadouts,
+)
 from .calculations import effective_health, expected_chained_attacks, stack_damage_reductions
 from .ocr_engine import recognize_item_image
 from .ocr_parser import parse_item_lines
@@ -66,6 +71,9 @@ def _build_parser() -> argparse.ArgumentParser:
     ocr = subcommands.add_parser("ocr", help="将装备截图识别成结构化 JSON")
     ocr.add_argument("image")
     ocr.add_argument("--output", "-o", required=True)
+    ocr_text = subcommands.add_parser("ocr-text", help="识别附魔候选等界面原始文本")
+    ocr_text.add_argument("image")
+    ocr_text.add_argument("--output", "-o", required=True)
 
     profile = subcommands.add_parser("profile", help="维护用户角色快照")
     profile_commands = profile.add_subparsers(dest="profile_command", required=True)
@@ -85,6 +93,16 @@ def _build_parser() -> argparse.ArgumentParser:
     render = profile_commands.add_parser("render")
     render.add_argument("--output")
     render.add_argument("--root", default=str(DEFAULT_PROFILE_ROOT))
+    fingerprint = profile_commands.add_parser(
+        "fingerprint", help="输出当前装备与面板计算指纹"
+    )
+    fingerprint.add_argument("--root", default=str(DEFAULT_PROFILE_ROOT))
+    save_enchantment = profile_commands.add_parser(
+        "save-enchantment-analysis",
+        help="保存附魔建议分析，不修改当前穿戴装备",
+    )
+    save_enchantment.add_argument("--input", required=True)
+    save_enchantment.add_argument("--root", default=str(DEFAULT_PROFILE_ROOT))
 
     calc = subcommands.add_parser("calc", help="运行可复用的基础计算")
     calc_commands = calc.add_subparsers(dest="calc_command", required=True)
@@ -104,6 +122,9 @@ def _build_parser() -> argparse.ArgumentParser:
     audit = calc_commands.add_parser("audit-panel")
     audit.add_argument("--input", required=True)
     audit.add_argument("--output")
+    enchant = calc_commands.add_parser("enchant")
+    enchant.add_argument("--input", required=True)
+    enchant.add_argument("--output")
 
     version = subcommands.add_parser("version", help="检查本地规则缓存是否仍有效")
     version_commands = version.add_subparsers(dest="version_command", required=True)
@@ -120,6 +141,24 @@ def main(argv: list[str] | None = None) -> int:
         item = parse_item_lines(lines, source_image=Path(args.image).name)
         item["source"]["ocr"] = metadata
         _emit_json(item, args.output)
+        return 0
+
+    if args.command == "ocr-text":
+        lines, metadata = recognize_item_image(args.image)
+        result = {
+            "source_image": Path(args.image).name,
+            "lines": [
+                {
+                    "text": line.text,
+                    "confidence": line.confidence,
+                    "box": line.box,
+                    "in_item_panel": line.in_item_panel,
+                }
+                for line in lines
+            ],
+            "ocr": metadata,
+        }
+        _emit_json(result, args.output)
         return 0
 
     if args.command == "profile":
@@ -141,6 +180,14 @@ def main(argv: list[str] | None = None) -> int:
         elif args.profile_command == "render":
             output = store.render_snapshot(args.output)
             result = {"snapshot": str(output.resolve())}
+        elif args.profile_command == "fingerprint":
+            result = {"profile_fingerprint": store.current_fingerprint()}
+        elif args.profile_command == "save-enchantment-analysis":
+            analysis = _read_json(args.input)
+            _require_locked_ruleset(
+                analysis.get("ruleset"), _locked_ruleset_id(), "enchantment analysis"
+            )
+            result = store.set_enchantment_analysis(analysis)
         else:
             result = store.set_item(
                 args.slot,
@@ -177,6 +224,15 @@ def main(argv: list[str] | None = None) -> int:
                     f"scenario {scenario_name} side {side}",
                 )
         result = compare_loadouts(payload)
+        _emit_json(result, args.output)
+        return 0
+
+    if args.calc_command == "enchant":
+        payload = _read_json(args.input)
+        _require_locked_ruleset(
+            payload.get("ruleset"), _locked_ruleset_id(), "enchantment analysis"
+        )
+        result = analyze_enchantment_options(payload)
         _emit_json(result, args.output)
         return 0
 

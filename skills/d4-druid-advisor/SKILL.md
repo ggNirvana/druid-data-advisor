@@ -1,6 +1,6 @@
 ---
 name: d4-druid-advisor
-description: Analyze Diablo IV Druid equipment and character data for the fixed D2Core build 1ZsP variant 9. Use when the user provides Druid equipment or panel screenshots, asks which item is better with exact numeric deltas, wants expected and theoretical maximum single-hit damage, needs character-panel weakness analysis, or wants tempering and masterworking recommendations that account for high-tier survivability.
+description: Analyze Diablo IV Druid equipment and character data for the fixed D2Core build 1ZsP variant 9. Use when the user provides Druid equipment or panel screenshots, asks which item is better with exact numeric deltas, wants expected and theoretical maximum single-hit damage, needs character-panel weakness analysis, or wants enchanting, tempering, and masterworking recommendations that account for high-tier survivability.
 ---
 
 # D4 德鲁伊装备顾问
@@ -54,6 +54,30 @@ Keep `expected_damage_per_cast` separate. Never present Waxing Gibbous repeated 
 ### Audit a character panel
 
 Construct version- and scenario-specific targets, then run `calc audit-panel --input FILE`. Rank objective gaps, overcaps, breakpoints, and marginal factor gains. Apply judgement to recommend the top three weaknesses, tempering, and masterworking targets. Give both damage-first and high-tier-survival paths; prefer survival when damage already exceeds the survivable ceiling.
+
+### Recommend equipment enchantments
+
+1. Load `data/reference/enchantment-rules.json`. When its candidate pool is not cached for the
+   locked ruleset, request the smallest missing evidence: a screenshot of the Occultist's complete
+   “可能属性” list with the item and roll ranges visible. Run `ocr-text IMAGE --output FILE`, then
+   verify only low-confidence candidates that could change the ranking. Never infer legality from
+   the generic stat alias registry.
+2. Identify the one affix the locked ruleset legally allows the user to replace. Never treat an
+   implicit, aspect, unique power, temper, or locked affix as an enchantment target.
+3. Run `profile fingerprint` and put the returned SHA-256 value in `profile_fingerprint`. For each
+   legal replacement, remove the existing affix first and rebuild the complete character
+   outcome at the candidate's minimum, declared expected, and maximum roll. Record `replace_roll`
+   and `target_roll` so the lost stat and offered range remain auditable.
+4. Include expected single hit, sustained DPS when available, physical/elemental EHP, and projected
+   attack-speed, cooldown, resource, armor, resistance, or critical breakpoints that can change the
+   recommendation. Supply complete `after_stats` for all three roll bounds; never overlay a partial
+   candidate onto the current stats because that can retain the removed affix.
+5. Run `calc enchant --input FILE`. Report both damage-first and high-tier-survival rankings, roll
+   ranges, lost-stat opportunity cost, confidence, and any breakpoint crossed or lost.
+6. Save the advisory result with `profile save-enchantment-analysis --input RESULT_FILE` when the
+   user wants the snapshot updated. This only updates analysis and never changes equipped items.
+7. Do not write the proposed enchantment into current equipment until the user confirms the actual
+   in-game result. If the enchanted/locked marker is unclear, request only that item's detail view.
 
 ## Persist and render
 

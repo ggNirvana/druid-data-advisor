@@ -9,6 +9,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from .profile_fingerprint import character_fingerprint
+
 
 PROTECTED_FIELDS = {
     "schema_version",
@@ -105,6 +107,9 @@ def _validate_item(slot: str, item: Any) -> None:
     masterworking = item.get("masterworking")
     if masterworking is not None and not isinstance(masterworking, (dict, list)):
         raise ValueError("item.masterworking must be an object, array, or null")
+    enchantment = item.get("enchantment")
+    if enchantment is not None and not isinstance(enchantment, (dict, list)):
+        raise ValueError("item.enchantment must be an object, array, or null")
     power = item.get("power")
     if power is not None and not isinstance(power, dict):
         raise ValueError("item.power must be an object or null")
@@ -133,7 +138,320 @@ def _validate_profile(profile: Any) -> None:
             raise ValueError(f"profile.{field} must be a {expected_type.__name__}")
     for slot, item in profile["equipment"].items():
         _validate_item(slot, item)
+    enchantment_analysis = profile.get("analysis", {}).get("enchantment")
+    if enchantment_analysis is not None:
+        _validate_enchantment_analysis(enchantment_analysis)
     _validate_finite_tree(profile)
+
+
+def _validate_enchantment_analysis(analysis: Any) -> None:
+    if not isinstance(analysis, dict):
+        raise ValueError("enchantment analysis must be an object")
+    for field in ("ruleset", "scenario"):
+        if not isinstance(analysis.get(field), str) or not analysis[field].strip():
+            raise ValueError(f"enchantment analysis {field} must be a non-empty string")
+    profile_fingerprint = analysis.get("profile_fingerprint")
+    if (
+        not isinstance(profile_fingerprint, str)
+        or len(profile_fingerprint) != 64
+        or any(character not in "0123456789abcdef" for character in profile_fingerprint)
+    ):
+        raise ValueError("enchantment analysis profile_fingerprint must be a SHA-256 digest")
+    confidence = analysis.get("confidence")
+    if (
+        isinstance(confidence, bool)
+        or not isinstance(confidence, (int, float))
+        or not math.isfinite(confidence)
+        or not 0 <= confidence <= 1
+    ):
+        raise ValueError("enchantment analysis confidence must be between 0 and 1")
+    rankings = analysis.get("rankings")
+    if not isinstance(rankings, dict) or not rankings:
+        raise ValueError("enchantment analysis rankings must be an object")
+    options = analysis.get("options")
+    if not isinstance(options, list) or not options:
+        raise ValueError("enchantment analysis options must be a non-empty array")
+    objectives = analysis.get("objectives")
+    if not isinstance(objectives, dict) or not objectives:
+        raise ValueError("enchantment analysis objectives must be a non-empty object")
+    normalized_objectives: dict[str, dict[str, float]] = {}
+    for objective, weights in objectives.items():
+        if not isinstance(objective, str) or not objective.strip() or not isinstance(weights, dict):
+            raise ValueError("enchantment analysis objectives are malformed")
+        normalized_weights: dict[str, float] = {}
+        for metric, weight in weights.items():
+            if (
+                not isinstance(metric, str)
+                or not metric.strip()
+                or isinstance(weight, bool)
+                or not isinstance(weight, (int, float))
+                or not math.isfinite(weight)
+                or weight < 0
+            ):
+                raise ValueError(f"enchantment analysis objectives.{objective} is malformed")
+            normalized_weights[metric] = float(weight)
+        if not math.isclose(sum(normalized_weights.values()), 1.0, abs_tol=1e-9):
+            raise ValueError(f"enchantment analysis objectives.{objective} weights must sum to 1")
+        normalized_objectives[objective] = normalized_weights
+    if set(rankings) != set(normalized_objectives):
+        raise ValueError("enchantment analysis rankings must match objectives")
+
+    option_ids: set[str] = set()
+    for index, option in enumerate(options):
+        if not isinstance(option, dict):
+            raise ValueError(f"enchantment analysis options[{index}] must be an object")
+        for field in ("id", "slot", "replace_stat", "target_stat"):
+            if not isinstance(option.get(field), str) or not option[field].strip():
+                raise ValueError(f"enchantment analysis options[{index}].{field} is required")
+        option_id = option["id"]
+        if option_id in option_ids:
+            raise ValueError(f"duplicate enchantment analysis option: {option_id}")
+        option_ids.add(option_id)
+        option_confidence = option.get("confidence")
+        if (
+            isinstance(option_confidence, bool)
+            or not isinstance(option_confidence, (int, float))
+            or not math.isfinite(option_confidence)
+            or not 0 <= option_confidence <= 1
+        ):
+            raise ValueError(
+                f"enchantment analysis options[{index}].confidence must be between 0 and 1"
+            )
+        if option_confidence > confidence:
+            raise ValueError(
+                f"enchantment analysis options[{index}].confidence cannot exceed common confidence"
+            )
+        exchange = option.get("affix_exchange")
+        if not isinstance(exchange, dict):
+            raise ValueError(f"enchantment analysis options[{index}].affix_exchange is required")
+        lost = exchange.get("lost")
+        gained = exchange.get("gained")
+        if not isinstance(lost, dict) or not isinstance(gained, dict):
+            raise ValueError(
+                f"enchantment analysis options[{index}].affix_exchange needs lost and gained"
+            )
+        if lost.get("stat") != option["replace_stat"] or gained.get("stat") != option["target_stat"]:
+            raise ValueError(
+                f"enchantment analysis options[{index}].affix_exchange stat mismatch"
+            )
+        for label, affix, numeric_fields in (
+            ("lost", lost, ("value",)),
+            ("gained", gained, ("minimum", "expected", "maximum")),
+        ):
+            if not isinstance(affix.get("unit"), str) or not affix["unit"].strip():
+                raise ValueError(
+                    f"enchantment analysis options[{index}].affix_exchange.{label}.unit is required"
+                )
+            for field in numeric_fields:
+                value = affix.get(field)
+                if (
+                    isinstance(value, bool)
+                    or not isinstance(value, (int, float))
+                    or not math.isfinite(value)
+                    or value < 0
+                ):
+                    raise ValueError(
+                        f"enchantment analysis options[{index}].affix_exchange."
+                        f"{label}.{field} must be a non-negative finite number"
+                    )
+        if not gained["minimum"] <= gained["expected"] <= gained["maximum"]:
+            raise ValueError(
+                f"enchantment analysis options[{index}].affix_exchange.gained roll order is invalid"
+            )
+        outcomes = option.get("outcomes")
+        if not isinstance(outcomes, dict) or not outcomes:
+            raise ValueError(f"enchantment analysis options[{index}].outcomes is required")
+        for metric, outcome in outcomes.items():
+            if not isinstance(metric, str) or not metric.strip() or not isinstance(outcome, dict):
+                raise ValueError(
+                    f"enchantment analysis options[{index}].outcomes is malformed"
+                )
+            current = outcome.get("current")
+            after = outcome.get("after")
+            direction = outcome.get("direction")
+            if (
+                isinstance(current, bool)
+                or not isinstance(current, (int, float))
+                or not math.isfinite(current)
+                or current < 0
+                or not isinstance(after, dict)
+                or direction not in {"higher", "lower"}
+            ):
+                raise ValueError(
+                    f"enchantment analysis options[{index}].outcomes.{metric} is malformed"
+                )
+            after_values: dict[str, float] = {}
+            for bound in ("minimum", "expected", "maximum"):
+                value = after.get(bound)
+                if (
+                    isinstance(value, bool)
+                    or not isinstance(value, (int, float))
+                    or not math.isfinite(value)
+                    or value < 0
+                ):
+                    raise ValueError(
+                        f"enchantment analysis options[{index}].outcomes.{metric}."
+                        f"after.{bound} must be a non-negative finite number"
+                    )
+                after_values[bound] = float(value)
+            delta_percents = {
+                bound: (0.0 if value == 0 else None)
+                if current == 0
+                else (value / current - 1) * 100
+                for bound, value in after_values.items()
+            }
+            sign = 1 if direction == "higher" else -1
+            utilities = {
+                bound: value * sign if value is not None else None
+                for bound, value in delta_percents.items()
+            }
+            finite_utilities = [value for value in utilities.values() if value is not None]
+            expected_fields = {
+                "minimum_delta_percent": delta_percents["minimum"],
+                "expected_delta_percent": delta_percents["expected"],
+                "maximum_delta_percent": delta_percents["maximum"],
+                "minimum_utility": utilities["minimum"],
+                "utility_lower_bound": min(finite_utilities) if finite_utilities else None,
+                "expected_utility": utilities["expected"],
+                "maximum_utility": utilities["maximum"],
+                "utility_upper_bound": max(finite_utilities) if finite_utilities else None,
+            }
+            for field, expected_value in expected_fields.items():
+                actual_value = outcome.get(field)
+                if expected_value is None:
+                    matches = actual_value is None
+                else:
+                    matches = (
+                        not isinstance(actual_value, bool)
+                        and isinstance(actual_value, (int, float))
+                        and math.isfinite(actual_value)
+                        and math.isclose(
+                            actual_value, expected_value, rel_tol=1e-9, abs_tol=1e-9
+                        )
+                    )
+                if not matches:
+                    raise ValueError(
+                        f"enchantment analysis options[{index}].outcomes.{metric}.{field} "
+                        "does not match its before/after values"
+                    )
+        expected_tradeoffs = sorted(
+            metric
+            for metric, outcome in outcomes.items()
+            if outcome["expected_utility"] is not None and outcome["expected_utility"] < 0
+        )
+        if option.get("tradeoffs") != expected_tradeoffs:
+            raise ValueError(
+                f"enchantment analysis options[{index}].tradeoffs does not match outcomes"
+            )
+
+    options_by_id = {option["id"]: option for option in options}
+
+    for objective, entries in rankings.items():
+        if not isinstance(objective, str) or not objective.strip():
+            raise ValueError("enchantment analysis ranking names must be non-empty strings")
+        if not isinstance(entries, list) or not entries:
+            raise ValueError(f"enchantment analysis rankings.{objective} must be a non-empty array")
+        ranked_ids: list[str] = []
+        for index, entry in enumerate(entries):
+            if not isinstance(entry, dict):
+                raise ValueError(
+                    f"enchantment analysis rankings.{objective}[{index}] must be an object"
+                )
+            option_id = entry.get("id")
+            if option_id not in option_ids:
+                raise ValueError(
+                    f"enchantment analysis rankings.{objective}[{index}] references unknown option"
+                )
+            ranked_ids.append(option_id)
+            for field in ("score_lower_bound", "score_expected", "score_upper_bound"):
+                value = entry.get(field)
+                if (
+                    isinstance(value, bool)
+                    or not isinstance(value, (int, float))
+                    or not math.isfinite(value)
+                ):
+                    raise ValueError(
+                        f"enchantment analysis rankings.{objective}[{index}].{field} "
+                        "must be a finite number"
+                    )
+            entry_confidence = entry.get("confidence")
+            if (
+                isinstance(entry_confidence, bool)
+                or not isinstance(entry_confidence, (int, float))
+                or not math.isfinite(entry_confidence)
+                or not 0 <= entry_confidence <= 1
+            ):
+                raise ValueError(
+                    f"enchantment analysis rankings.{objective}[{index}].confidence "
+                    "must be between 0 and 1"
+                )
+            matching_option = options_by_id[option_id]
+            for field in ("slot", "replace_stat", "target_stat"):
+                if entry.get(field) != matching_option[field]:
+                    raise ValueError(
+                        f"enchantment analysis rankings.{objective}[{index}].{field} "
+                        "must match its option"
+                    )
+            if not math.isclose(entry_confidence, matching_option["confidence"]):
+                raise ValueError(
+                    f"enchantment analysis rankings.{objective}[{index}].confidence "
+                    "must match its option"
+                )
+            tradeoffs = entry.get("tradeoffs")
+            if not isinstance(tradeoffs, list) or not all(
+                isinstance(value, str) for value in tradeoffs
+            ):
+                raise ValueError(
+                    f"enchantment analysis rankings.{objective}[{index}].tradeoffs must be strings"
+                )
+            if tradeoffs != matching_option["tradeoffs"]:
+                raise ValueError(
+                    f"enchantment analysis rankings.{objective}[{index}].tradeoffs "
+                    "must match its option"
+                )
+            missing_metrics = set(normalized_objectives[objective]).difference(
+                matching_option["outcomes"]
+            )
+            if missing_metrics:
+                raise ValueError(
+                    f"enchantment analysis option {option_id} is missing objective metrics: "
+                    + ", ".join(sorted(missing_metrics))
+                )
+            expected_scores = {
+                "score_lower_bound": math.fsum(
+                    weight * matching_option["outcomes"][metric]["utility_lower_bound"]
+                    for metric, weight in normalized_objectives[objective].items()
+                ),
+                "score_expected": math.fsum(
+                    weight * matching_option["outcomes"][metric]["expected_utility"]
+                    for metric, weight in normalized_objectives[objective].items()
+                ),
+                "score_upper_bound": math.fsum(
+                    weight * matching_option["outcomes"][metric]["utility_upper_bound"]
+                    for metric, weight in normalized_objectives[objective].items()
+                ),
+            }
+            for field, expected_score in expected_scores.items():
+                if not math.isclose(entry[field], expected_score, rel_tol=1e-9, abs_tol=1e-9):
+                    raise ValueError(
+                        f"enchantment analysis rankings.{objective}[{index}].{field} "
+                        "does not match option outcomes"
+                    )
+        if len(ranked_ids) != len(set(ranked_ids)) or set(ranked_ids) != option_ids:
+            raise ValueError(
+                f"enchantment analysis rankings.{objective} must reference every option once"
+            )
+        expected_order = sorted(
+            entries,
+            key=lambda entry: (
+                -entry["score_expected"],
+                -entry["score_lower_bound"],
+                entry["id"],
+            ),
+        )
+        if [entry["id"] for entry in entries] != [entry["id"] for entry in expected_order]:
+            raise ValueError(f"enchantment analysis rankings.{objective} is not correctly ordered")
+    _validate_finite_tree(analysis, "enchantment analysis")
 
 
 class CharacterStore:
@@ -207,6 +525,21 @@ class CharacterStore:
         profile.setdefault("equipment", {})[slot] = stored_item
         self._save(profile, event=f"set_item:{slot}")
         return profile
+
+    def set_enchantment_analysis(self, analysis: dict[str, Any]) -> dict[str, Any]:
+        """Store advisory output without mutating equipped items or confirmed enchantments."""
+        _validate_enchantment_analysis(analysis)
+        profile = self.load()
+        if analysis["profile_fingerprint"] != character_fingerprint(profile):
+            raise ValueError(
+                "enchantment analysis profile fingerprint does not match the current character"
+            )
+        profile.setdefault("analysis", {})["enchantment"] = copy.deepcopy(analysis)
+        self._save(profile, event="set_enchantment_analysis")
+        return profile
+
+    def current_fingerprint(self) -> str:
+        return character_fingerprint(self.load())
 
     def render_snapshot(self, output_path: str | Path | None = None) -> Path:
         return self._render_profile(self.load(), output_path or self.root / "snapshot.html")

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "ruleset": "3.1.0.72592",
+  "candidate_pool": {
+    "status": "not_cached",
+    "reason": "当前本地参考数据没有可按物品类型、稀有度和装备状态复核的完整附魔池与数值范围。",
+    "required_evidence": "occultist_possible_affixes_screenshot",
+    "required_view": "秘术师附魔界面的‘可能属性’完整列表，需同时显示当前物品和各候选数值范围"
+  },
+  "legality_policy": {
+    "allowed_without_candidate_pool_evidence": [],
+    "never_treat_as_replaceable": [
+      "implicit_affix",
+      "aspect",
+      "unique_power",
+      "mythic_power",
+      "tempering",
+      "masterworking"
+    ],
+    "instruction": "只计算游戏内当前物品的‘可能属性’列表明确展示的候选；本地附魔池未缓存时禁止根据通用词条别名猜测合法性。"
+  },
+  "ocr": {
+    "command": "ocr-text",
+    "required_fields": ["candidate_name", "minimum_roll", "maximum_roll"],
+    "low_confidence_action": "直接核对截图中会影响排名的候选和数值"
+  }
+}
