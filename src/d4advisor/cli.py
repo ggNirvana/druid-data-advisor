@@ -20,6 +20,7 @@ from .calculations import (
 from .ocr_engine import create_ocr_engine, recognize_item_image
 from .ocr_parser import parse_item_lines
 from .profile_store import CharacterStore
+from .snapshot_compare import EVENT_PRESETS, compare_snapshot_item
 from .versioning import version_lock_status
 
 DEFAULT_PROFILE_ROOT = Path("data/user")
@@ -157,6 +158,15 @@ def _build_parser() -> argparse.ArgumentParser:
     compare = calc_commands.add_parser("compare")
     compare.add_argument("--input", required=True)
     compare.add_argument("--output")
+    compare_item = calc_commands.add_parser(
+        "compare-item",
+        help="从当前快照原子模拟整件装备替换并重算同一伤害事件",
+    )
+    compare_item.add_argument("--slot", required=True)
+    compare_item.add_argument("--candidate", required=True)
+    compare_item.add_argument("--event", choices=sorted(EVENT_PRESETS), default="shred")
+    compare_item.add_argument("--root", default=str(DEFAULT_PROFILE_ROOT))
+    compare_item.add_argument("--output")
     audit = calc_commands.add_parser("audit-panel")
     audit.add_argument("--input", required=True)
     audit.add_argument("--output")
@@ -414,6 +424,18 @@ def main(argv: list[str] | None = None) -> int:
                     f"scenario {scenario_name} side {side}",
                 )
         result = compare_loadouts(payload)
+        _emit_json(result, args.output)
+        return 0
+
+    if args.calc_command == "compare-item":
+        store = CharacterStore(args.root)
+        result = compare_snapshot_item(
+            store.load(),
+            slot=args.slot,
+            candidate=_read_json(args.candidate),
+            event_id=args.event,
+            ruleset=_locked_ruleset_id(),
+        )
         _emit_json(result, args.output)
         return 0
 

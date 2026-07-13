@@ -1,5 +1,57 @@
 # 计算模型契约
 
+## 快照装备替换原子操作
+
+固定利爪事件的常规装备比较优先运行：
+
+```bash
+d4advisor calc compare-item \
+  --slot ring_2 \
+  --candidate data/user/candidates/new-ring.json \
+  --event shred
+```
+
+该操作不会修改人物档案。它在内存中执行完整顺序：当前快照重算、克隆、移除旧装备、
+加入候选、从所有装备来源重建模拟面板与乘区、同场景重算。输出包含四个暴击/易伤分支、
+满增益理论分支、期望命中或严格边界、因子变化及不支持项。不得把候选词条直接叠加到
+仍包含旧装备的面板。
+
+当 `analysis.damage_events.shred` 尚未保存真实加法池时，命令返回相对期望伤害的严格
+边界和 `current_index: 100`，不会从面板顶部合成伤害反推。若要同时得到绝对期望伤害，
+在人物快照保存以下事件输入：
+
+```json
+{
+  "analysis": {
+    "damage_events": {
+      "shred": {
+        "comparison_slot": "ring_2",
+        "skill_coefficient": 1.0,
+        "enemy_damage_factor": 1.0,
+        "common_standalone_factor": 1.0,
+        "non_equipment_bucket_bonuses": {
+          "all_damage": 0.0,
+          "critical_strike": 0.0,
+          "vulnerable": 0.0,
+          "damage_over_time": 0.0
+        },
+        "additive": {
+          "always": 0.0,
+          "crit_only": 0.0,
+          "vulnerable_only": 0.0
+        }
+      }
+    }
+  }
+}
+```
+
+示例中的 `1.0/0.0` 只是字段形状，不是当前角色默认值；必须由技能、目标场景和面板悬停
+底部真实数据填入。`common_standalone_factor` 是该 `comparison_slot` 之外、在此事件中共同
+生效的完整独立乘区乘积；槽位不匹配时命令拒绝输出绝对值。若命令返回
+`blocking_reasons`，再使用下方完整账本流程。`non_equipment_bucket_bonuses` 与 `additive`
+都使用小数 bonus（`0.31` 表示 `31%`），不是游戏显示的百分数整数。
+
 ## 伤害事件账本
 
 Pass JSON with these fields to `calc damage-event`:

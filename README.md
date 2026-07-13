@@ -96,6 +96,8 @@ scripts/d4advisor calc ehp --life 10000 --reductions 0.2 0.3
 # 单一伤害事件、装备A/B、人物面板审计与附魔候选排名
 scripts/d4advisor calc damage-event --input data/inbox/damage-ledger.json
 scripts/d4advisor calc compare --input data/inbox/comparison.json
+scripts/d4advisor calc compare-item --slot ring_2 \
+  --candidate data/user/candidates/new-ring.json --event shred
 scripts/d4advisor calc audit-panel --input data/inbox/panel-audit.json
 scripts/d4advisor calc enchant --input data/inbox/enchantment-options.json \
   --output data/inbox/enchantment-result.json
@@ -111,6 +113,11 @@ scripts/d4advisor profile save-enchantment-analysis \
 [`skills/d4-druid-advisor/references/model-contract.md`](skills/d4-druid-advisor/references/model-contract.md)
 与 [`docs/season13-damage-formula.md`](docs/season13-damage-formula.md)。旧账本只能显式选择
 `legacy-independent-v0`，结果会标记为近似并返回警告。
+
+`calc compare-item` 是利爪装备替换的快速原子路径：它先按当前快照计算，再在内存中整件
+移除旧装备并加入候选，从所有来源重建模拟面板和同名乘区，最后在相同场景重算。该命令
+不会写入快照。缺少面板悬停底部的真实加法池时，它返回期望提升的严格边界和以当前值
+为 100 的指数；只有人物档案保存完整伤害事件输入后才输出绝对期望伤害。
 
 附魔计算输入必须包含刚由 `profile fingerprint` 产生的人物基线指纹。当本地版本数据未缓存
 完整附魔池时，使用秘术师“可能属性”列表截图作为合法候选和 roll 范围的真值来源：

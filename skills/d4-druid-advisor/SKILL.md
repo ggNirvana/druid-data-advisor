@@ -56,11 +56,26 @@ the installed Skill launcher:
 
 ### Compare equipment
 
+For a Shred item replacement, run the snapshot comparison atom first:
+
+```bash
+"${CODEX_HOME:-$HOME/.codex}/skills/d4-druid-advisor/scripts/run_advisor.py" \
+  calc compare-item --slot ring_2 --candidate CANDIDATE.json --event shred
+```
+
+This single command loads the current snapshot, calculates the equipped loadout, clones it in
+memory, removes the whole equipped item, inserts the candidate, rebuilds panel-derived values and
+all named buckets from source affixes, then calculates the same event again. Use its branch deltas,
+expected-hit result or bound, component changes, cooldown delta, warnings, and blocking reasons
+directly. Do not manually rebuild a supported comparison or reread the formula reference when this
+atom returns no blocking reason.
+
 Read [references/model-contract.md](references/model-contract.md) and
-[../../docs/season13-damage-formula.md](../../docs/season13-damage-formula.md). Build A and B
-`season13-buckets-v1` ledgers from the same character baseline, removing A before adding B. Include
-steady combat, full-buff boss, expected damage per Shred cast, sustained DPS when rotation inputs
-exist, and physical/elemental EHP.
+[../../docs/season13-damage-formula.md](../../docs/season13-damage-formula.md) only when the atom
+reports a changed unknown power, changed additive-damage affix, weapon-set damage change, skill-rank
+coefficient change, or an unsupported event. Then build matching A/B `season13-buckets-v1` ledgers
+with the same character baseline, removing A before adding B. Include steady combat, full-buff boss,
+expected damage per Shred cast, sustained DPS when rotation inputs exist, and physical/elemental EHP.
 
 Never multiply every displayed `x%` affix independently. First add Critical Strike Damage
 Multiplier affixes into the critical bucket, Vulnerable Damage Multiplier affixes into the
