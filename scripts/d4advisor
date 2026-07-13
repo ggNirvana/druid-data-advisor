@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+if [[ ! -x "$ROOT/.venv/bin/python" ]]; then
+  echo "本地运行时尚未安装，请先运行 scripts/setup-local.sh" >&2
+  exit 1
+fi
+
+cd "$ROOT"
+exec "$ROOT/.venv/bin/python" -m d4advisor "$@"

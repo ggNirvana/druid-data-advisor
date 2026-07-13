@@ -1,0 +1,144 @@
+{
+  "affixes": [
+    {
+      "confidence": 0.9969,
+      "display_name": "意力",
+      "is_greater_affix": true,
+      "operator": "add",
+      "raw_text": "+151点意力",
+      "stat": "willpower",
+      "unit": "flat",
+      "value": 151.0
+    },
+    {
+      "confidence": 0.9638,
+      "display_name": "易伤伤害增倍",
+      "is_greater_affix": true,
+      "operator": "multiply",
+      "raw_text": "x18%易伤伤害增倍",
+      "stat": "vulnerable_damage_multiplier",
+      "unit": "percent",
+      "value": 18.0
+    },
+    {
+      "confidence": 0.9462,
+      "display_name": "物理伤害增倍",
+      "is_greater_affix": true,
+      "operator": "multiply",
+      "raw_text": "x13%物理伤害增倍",
+      "stat": "physical_damage_multiplier",
+      "unit": "percent",
+      "value": 13.0
+    },
+    {
+      "confidence": 0.9985,
+      "display_name": "冷却时间缩减",
+      "is_greater_affix": true,
+      "operator": "add",
+      "raw_text": "10.0%冷却时间缩减",
+      "stat": "cooldown_reduction",
+      "unit": "percent",
+      "value": 10.0
+    }
+  ],
+  "ancestral": true,
+  "expansion": "憎恨之躯",
+  "greater_affix_count": 4,
+  "implicit_affixes": [
+    {
+      "confidence": 0.9956,
+      "display_name": "所有抗性",
+      "is_greater_affix": false,
+      "operator": "add",
+      "raw_text": "173所有抗性（+0.7%坚韧）",
+      "stat": "all_resistance",
+      "unit": "flat",
+      "value": 173.0
+    }
+  ],
+  "item_power": 900,
+  "minimum_confidence": 0.9316,
+  "name": "残暴三合金属之戒",
+  "ocr_lines": [
+    {
+      "confidence": 0.9988,
+      "text": "残暴三合金属之戒"
+    },
+    {
+      "confidence": 0.998,
+      "text": "先祖传奇戒指"
+    },
+    {
+      "confidence": 0.9993,
+      "text": "900物品强度"
+    },
+    {
+      "confidence": 0.9956,
+      "text": "173所有抗性（+0.7%坚韧）"
+    },
+    {
+      "confidence": 0.9969,
+      "text": "+151点意力"
+    },
+    {
+      "confidence": 0.9638,
+      "text": "x18%易伤伤害增倍"
+    },
+    {
+      "confidence": 0.9462,
+      "text": "x13%物理伤害增倍"
+    },
+    {
+      "confidence": 0.9985,
+      "text": "10.0%冷却时间缩减"
+    },
+    {
+      "confidence": 0.949,
+      "text": "你的残暴层数上限提高5[4-6]。"
+    },
+    {
+      "confidence": 0.9919,
+      "text": "需要等级：70"
+    },
+    {
+      "confidence": 0.9316,
+      "text": "《憎恨之躯》物品"
+    }
+  ],
+  "power": {
+    "confidence": 0.949,
+    "description": "你的残暴层数上限提高5[4-6]。",
+    "values": [
+      5.0,
+      4.0,
+      6.0
+    ]
+  },
+  "rarity": "legendary",
+  "required_level": 70,
+  "review": {
+    "greater_affix_detection": "image_marker",
+    "reasons": [],
+    "required": false
+  },
+  "schema_version": 1,
+  "slot": "ring",
+  "source": {
+    "image": "2e6860103beee24884e5ba66995074ad.png",
+    "ocr": {
+      "elapsed_seconds": [
+        0.38382880499921157,
+        0.052968502044677734,
+        1.4004182815551758
+      ],
+      "engine": "rapidocr_onnxruntime",
+      "engine_version": "1.4.4",
+      "image_height": 487,
+      "image_sha256": "afe7f8dcb1e08f14b1eab8da714ec93ca7b7009ff6f890fa18436b0eda6c497a",
+      "image_width": 646,
+      "panel_cutoff": 110,
+      "panel_text_left": 145
+    }
+  },
+  "unparsed_lines": []
+}

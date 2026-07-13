@@ -1,0 +1,17 @@
+{
+  "build_ref": {
+    "build_id": "1ZsP",
+    "provider": "d2core",
+    "snapshot": "2026-07-13",
+    "variant": 9
+  },
+  "equipment": {},
+  "last_event": "initialize",
+  "observations": [],
+  "paragon_overrides": {},
+  "profile_id": "nirvana-druid-s14",
+  "schema_version": 1,
+  "stats": {},
+  "updated_at": "2026-07-13T11:17:15+08:00",
+  "version_lock_ref": "data/reference/version-lock.json"
+}

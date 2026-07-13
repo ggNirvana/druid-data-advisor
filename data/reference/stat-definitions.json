@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "stats": {
+    "all_resistance": {
+      "aliases_zh_cn": ["所有抗性", "全抗"],
+      "default_operator": "add",
+      "default_unit": "flat"
+    },
+    "cooldown_reduction": {
+      "aliases_zh_cn": ["冷却时间缩减", "冷却缩减", "CDR"],
+      "default_operator": "add",
+      "default_unit": "percent"
+    },
+    "physical_damage_multiplier": {
+      "aliases_zh_cn": ["物理伤害增倍", "物理伤害增幅"],
+      "default_operator": "multiply",
+      "default_unit": "percent"
+    },
+    "vulnerable_damage_multiplier": {
+      "aliases_zh_cn": ["易伤伤害增倍", "易伤伤害增幅"],
+      "default_operator": "multiply",
+      "default_unit": "percent"
+    },
+    "willpower": {
+      "aliases_zh_cn": ["意力"],
+      "default_operator": "add",
+      "default_unit": "flat"
+    }
+  }
+}

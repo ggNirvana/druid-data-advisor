@@ -1,0 +1,90 @@
+{
+  "build": {
+    "id": "1ZsP",
+    "provider": "d2core",
+    "snapshot_date": "2026-07-13",
+    "title": "【蓝萌君】S14德子 风暴狼德 - 全版本",
+    "url": "https://www.d2core.com/d4/planner?bd=1ZsP&var=9",
+    "variant": 9,
+    "variant_name": "利爪 - 冲层版本"
+  },
+  "equipment_identity": {
+    "amulet": ["凶邪新月", "超载威能"],
+    "boots": ["剥削者的威能"],
+    "chest": ["衰弱毒素之威能"],
+    "gloves": ["黑暗嚎叫"],
+    "helm": ["加斯伦的天命"],
+    "pants": ["迪博特的意志"],
+    "ring_1": ["艾蕊达哀歌"],
+    "ring_2": ["大德鲁伊的威能"],
+    "totem": ["伊菲的恐狼图腾"],
+    "weapon": ["盈月当空"]
+  },
+  "paragon": {
+    "allocated_points": 298,
+    "boards": [
+      "Start",
+      "Thunderstruck",
+      "Lust for Carnage",
+      "Constricting Tendrils",
+      "Ancestral Guidance"
+    ],
+    "glyph_count": 5,
+    "glyph_internal_ids": [
+      "ParagonGlyph_046_Druid",
+      "ParagonGlyph_039",
+      "ParagonGlyph_047",
+      "ParagonGlyph_040",
+      "ParagonGlyph_050"
+    ],
+    "glyph_level": 150,
+    "legendary_node_count": 4,
+    "unallocated_points": 44,
+    "unallocated_note": "D2Core只概括为投入意力；需要用户实际巅峰截图覆盖"
+  },
+  "runes": [
+    {"condition": "Per", "invocation": "Que", "result": "Earthen Bulwark"},
+    {"condition": "Moni", "invocation": "图", "result": "Frost Nova"}
+  ],
+  "schema_version": 1,
+  "skill_bar": [
+    "Wolves",
+    "Debilitating Roar",
+    "Hurricane",
+    "Grizzly Rage",
+    "Lightning Storm",
+    "Shred"
+  ],
+  "skills": {
+    "Blood Howl": {"rank": 1, "choices": ["Spirit Howl", "Healing", "Unstoppable", "Werewolf"]},
+    "Cyclone Armor": {"rank": 15, "choices": ["Reversal", "Increased Radius", "Resistance", "Versatile"]},
+    "Debilitating Roar": {"rank": 8, "choices": ["Booming Roar", "Increased Duration", "Cooldown", "Werebear"]},
+    "Earthen Bulwark": {"rank": 2, "choices": ["Travertine", "Fortify/Healing", "Unstoppable", "Versatile"]},
+    "Grizzly Rage": {"rank": 15, "choices": ["Cornered Beast", "Cooldown", "Fortify", "Werebear"]},
+    "Hurricane": {"rank": 1, "choices": ["Derecho", "Weaken", "Versatile"]},
+    "Lightning Storm": {"rank": 1, "choices": ["Hero of the Storm", "Additional Strikes", "Werewolf"]},
+    "Shred": {"rank": 15, "choices": ["Storm Shred", "Healing", "Cast Speed", "Werewolf"]},
+    "Wolves": {"rank": 1, "choices": ["Thrill of the Hunt", "Attack Speed", "Versatile"]}
+  },
+  "spirit_boons": [
+    "Prickleskin",
+    "Avian Wrath",
+    "Calamity",
+    "Calm Before the Storm",
+    "Overcharge"
+  ],
+  "talisman_primary_plan": {
+    "mountain_set_pieces": 5,
+    "storm_shepherd_pieces": 3,
+    "status": "planner_snapshot"
+  },
+  "mercenary": {
+    "status": "conditional_in_planner",
+    "options": {
+      "damage": ["Subo", "Varyana"],
+      "defense": ["Raheir"]
+    },
+    "requires_user_confirmation_when_breakpoints_change": true
+  },
+  "triggered_skills": ["Cyclone Armor", "Earthen Bulwark", "Blood Howl"]
+}

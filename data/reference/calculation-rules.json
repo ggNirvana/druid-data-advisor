@@ -1,0 +1,24 @@
+{
+  "formulas": {
+    "capped_chained_attacks": "sum(p^i for i=0..max_extra_attacks)",
+    "damage_reduction_stack": "1 - product(1 - reduction_i)",
+    "effective_health": "(life + active_barrier + other_absorption) / (1 - applicable_total_damage_reduction)",
+    "expected_crit_factor": "1 + crit_chance * (crit_multiplier - 1)",
+    "expected_vulnerable_factor": "1 + vulnerable_uptime * (vulnerable_multiplier - 1)",
+    "percentage_multiplier_to_factor": "1 + displayed_percent / 100"
+  },
+  "known_examples": {
+    "waxing_gibbous_expected_attacks": {
+      "max_extra_attacks": 4,
+      "probability": 0.33,
+      "result": 1.48669621
+    }
+  },
+  "limitations": [
+    "护甲、抗性和怪物层级缩放必须由对应ruleset数据补齐后计算",
+    "条件减伤只在条件实际覆盖期间进入EHP",
+    "服务器取整、技能动画档位和未公开bug需要实测校准",
+    "魔渊层数预测必须同时满足首领限时与生存风险阈值"
+  ],
+  "schema_version": 1
+}
