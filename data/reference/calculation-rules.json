@@ -1,18 +1,30 @@
 {
+  "damage_model": {
+    "id": "season13-buckets-v1",
+    "ruleset_verified": "3.1.0.72592",
+    "sources": [
+      "https://news.blizzard.com/en-us/article/24287406/diablo-iv-patch-notes",
+      "https://www.youtube.com/watch?v=2GKhCdxxqp8",
+      "https://docs.google.com/spreadsheets/d/1qM6XySdTPuoCF4pEndWihBy0oONayRwZZ9WePkn_TFU/",
+      "https://github.com/jlian/d4-damage-calc"
+    ]
+  },
   "formulas": {
     "capped_chained_attacks": "sum(p^i for i=0..max_extra_attacks)",
     "damage_reduction_stack": "1 - product(1 - reduction_i)",
     "effective_health": "(life + active_barrier + other_absorption) / (1 - applicable_total_damage_reduction)",
     "enchantment_objective_score": "sum(normalized_weight_i * outcome_delta_percent_i)",
     "enchantment_profile_fingerprint": "sha256(canonical_json(profile_id, build_ref, stats, equipment, paragon_overrides))",
-    "expected_conditional_factor": "1 + condition_uptime * (total_factor - 1)",
-    "expected_crit_factor": "1 + crit_chance * (crit_multiplier - 1)",
-    "expected_single_hit": "weapon_damage * skill_coefficient * (1 + additive_bonus) * product(expected_independent_factor_i) * expected_crit_factor * expected_vulnerable_factor",
-    "expected_vulnerable_factor": "1 + vulnerable_uptime * (vulnerable_multiplier - 1)",
+    "expected_conditional_factor": "1 + condition_uptime * (total_factor - 1); exact only for one source or declared-independent sources",
+    "multiplier_bucket_factor": "1 + sum(eligible_same_bucket_bonus_i)",
+    "season13_direct_branch": "weapon_damage * skill_coefficient * (1 + main_stat / main_stat_divisor) * enemy_damage_factor * product(standalone_factor_i) * all_damage_bucket * (1 + additive_always + crit_state * additive_crit_only + vulnerable_state * additive_vulnerable_only) * (1.5 * critical_bucket)^crit_state * (1.2 * vulnerable_bucket)^vulnerable_state",
+    "season13_dot_branch": "weapon_damage * skill_coefficient * (1 + main_stat / main_stat_divisor) * enemy_damage_factor * product(standalone_factor_i) * all_damage_bucket * dot_bucket * (1 + additive_always + additive_dot_only + vulnerable_state * additive_vulnerable_only) * (1.2 * vulnerable_bucket)^vulnerable_state",
+    "expected_single_hit": "sum(joint_probability_crit_vulnerable_state * damage_branch_state)",
     "panel_weighted_gap": "abs(target_or_cap - current) / abs(target_or_cap) * declared_priority",
-    "percentage_multiplier_to_factor": "1 + displayed_percent / 100",
+    "same_bucket_display_percent_to_bonus": "displayed_percent / 100",
+    "standalone_display_percent_to_factor": "1 + displayed_percent / 100",
     "sustained_dps": "expected_single_hit * expected_attacks_per_cast * casts_per_second * resource_uptime",
-    "theoretical_single_hit": "weapon_damage * skill_coefficient * (1 + additive_bonus) * product(eligible_full_condition_factor_i) * eligible_crit_factor * eligible_vulnerable_factor"
+    "theoretical_single_hit": "one legal branch with every declared eligible condition active; repeat attacks excluded"
   },
   "known_examples": {
     "waxing_gibbous_expected_attacks": {
@@ -26,7 +38,11 @@
     "护甲与抗性是递减收益评级；禁止把10000等固定评级当作通用上限，护甲应按面板减伤或匹配ruleset的换算曲线审计，当前减伤上限为90%",
     "条件减伤只在条件实际覆盖期间进入EHP",
     "服务器取整、技能动画档位和未公开bug需要实测校准",
+    "精铸词条可能显示取整值；隐藏精度未知时必须保留区间",
+    "面板顶部暴击、易伤和元素伤害是合成展示值，不能直接作为加法池；应读取悬停底部的物品和巅峰加法值",
+    "多个条件覆盖率只有在显式声明独立或提供联合概率时才能合成单一精确期望值",
+    "3.1.0 当前同桶词条先相加：暴击伤害增倍、易伤伤害增倍、持续伤害增倍、以及全伤与匹配物理/元素/武器宝石增倍各自形成命名桶",
     "魔渊层数预测必须同时满足首领限时与生存风险阈值"
   ],
-  "schema_version": 1
+  "schema_version": 2
 }

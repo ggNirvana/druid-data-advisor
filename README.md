@@ -105,6 +105,13 @@ scripts/d4advisor profile save-enchantment-analysis \
   --input data/inbox/enchantment-result.json
 ```
 
+当前伤害账本必须显式使用 `damage_model: "season13-buckets-v1"`。同名的暴击、易伤、
+持续伤害和全伤/匹配元素伤害增倍先在各自桶内相加，再由分支公式相乘；未知 `x%` 不会
+自动按独立乘区处理。完整字段、联合暴击/易伤概率和面板取值规则见
+[`skills/d4-druid-advisor/references/model-contract.md`](skills/d4-druid-advisor/references/model-contract.md)
+与 [`docs/season13-damage-formula.md`](docs/season13-damage-formula.md)。旧账本只能显式选择
+`legacy-independent-v0`，结果会标记为近似并返回警告。
+
 附魔计算输入必须包含刚由 `profile fingerprint` 产生的人物基线指纹。当本地版本数据未缓存
 完整附魔池时，使用秘术师“可能属性”列表截图作为合法候选和 roll 范围的真值来源：
 

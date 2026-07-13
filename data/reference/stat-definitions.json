@@ -46,6 +46,16 @@
       "default_operator": "multiply",
       "default_unit": "percent"
     },
+    "critical_damage_additive": {
+      "aliases_zh_cn": ["暴击伤害"],
+      "default_operator": "add",
+      "default_unit": "percent"
+    },
+    "damage_over_time_multiplier": {
+      "aliases_zh_cn": ["持续伤害增倍", "持续伤害增幅"],
+      "default_operator": "multiply",
+      "default_unit": "percent"
+    },
     "fire_resistance": {
       "aliases_zh_cn": ["火焰抗性", "火抗"],
       "default_operator": "add",
@@ -69,6 +79,11 @@
     "damage_multiplier": {
       "aliases_zh_cn": ["伤害增倍", "伤害增幅", "所有伤害增倍", "全伤害增倍"],
       "default_operator": "multiply",
+      "default_unit": "percent"
+    },
+    "all_damage_additive": {
+      "aliases_zh_cn": ["所有伤害", "全伤害"],
+      "default_operator": "add",
       "default_unit": "percent"
     },
     "lightning_damage_multiplier": {

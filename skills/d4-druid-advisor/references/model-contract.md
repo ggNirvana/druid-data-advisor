@@ -6,17 +6,39 @@ Pass JSON with these fields to `calc damage-event`:
 
 ```json
 {
+  "damage_model": "season13-buckets-v1",
   "ruleset": "3.1.0.72592",
   "scenario": "满增益首领",
   "event": "Shred largest hit",
+  "damage_kind": "direct",
   "weapon_damage": 1000,
   "skill_coefficient": 1.5,
-  "additive_bonus": 2.0,
-  "multipliers": [
+  "main_stat": {"value": 2606, "divisor": 800},
+  "enemy_damage_factor": 0.2,
+  "additive": {
+    "always": 2.0,
+    "crit_only": 1.0,
+    "vulnerable_only": 0.6,
+    "dot_only": 0.0
+  },
+  "multiplier_buckets": {
+    "all_damage": [
+      {"id": "amulet_lightning", "bonus": 0.41, "confidence": 1.0},
+      {"id": "ring_lightning", "bonus": 0.20, "confidence": 1.0}
+    ],
+    "critical_strike": [
+      {"id": "amulet_critical", "bonus": 0.48, "confidence": 1.0}
+    ],
+    "vulnerable": [
+      {"id": "ring_vulnerable", "bonus": 0.29, "confidence": 1.0}
+    ],
+    "damage_over_time": []
+  },
+  "standalone_multipliers": [
     {"id": "storm_shepherd", "factor": 1.6, "uptime": 0.9, "confidence": 1.0}
   ],
-  "crit": {"chance": 0.9, "factor": 3.5},
-  "vulnerable": {"uptime": 1.0, "factor": 1.8},
+  "crit": {"chance": 0.9, "base_factor": 1.5, "eligible": true},
+  "vulnerable": {"uptime": 1.0, "base_factor": 1.2, "eligible": true},
   "repeat": {"probability": 0.33, "max_extra_attacks": 4},
   "casts_per_second": 2.0,
   "resource_uptime": 0.95,
@@ -24,12 +46,39 @@ Pass JSON with these fields to `calc damage-event`:
 }
 ```
 
+- Read [../../../docs/season13-damage-formula.md](../../../docs/season13-damage-formula.md)
+  before constructing a current damage ledger.
+- `damage_model` is required. Use `season13-buckets-v1`. The explicit
+  `legacy-independent-v0` model is retained only to reproduce old approximate ledgers and returns a
+  warning; never use it for a current recommendation.
 - Express probabilities/uptimes as `0..1`.
-- Express independent multipliers as total factors (`1.18`, not `18`).
-- Express `additive_bonus` as bonus over base (`2.0` means `+200%`).
+- Express same-bucket affixes as decimal bonuses (`x31%` becomes `bonus: 0.31`). The calculator
+  produces `1 + sum(bucket bonuses)` and rejects unknown bucket names.
+- The `all_damage` bucket contains All Damage Multiplier plus only the physical/elemental
+  multipliers and weapon gems eligible for this exact event. Critical, vulnerable, and DoT
+  multiplier affixes go into their matching named buckets.
+- Express truly independent powers as total factors (`1.18`, not `18`) under
+  `standalone_multipliers`. Never put a same-bucket affix there.
+- Express additive bonuses as bonus over base (`2.0` means `+200%`). Keep `crit_only`,
+  `vulnerable_only`, and `dot_only` separate so the calculator can evaluate branches.
+- Use the displayed average weapon damage for the weapon set actually used by the event. Do not
+  reconstruct a Druid main/off-hand result from item-type constants when the panel value exists.
+- `main_stat.divisor` is `800` for Druid in the locked 3.1.0 model. Supply it explicitly rather than
+  inferring it from class text.
+- `enemy_damage_factor` is required. Use `1.0` for a normalized relative calculation or a verified
+  target factor for absolute damage; never silently hardcode the training dummy's `0.2`.
+- The character panel's top composite damage number is not the additive input. Hover the line and
+  use the bottom item/Paragon additive value. If unavailable, calculate only ratios where that
+  common pool cancels or return a bound.
+- Direct damage is evaluated across four crit/vulnerable branches. Supply `joint_probabilities`
+  when the states are correlated; otherwise the output records the explicit
+  `crit_vulnerable_independence` assumption. DoTs reject active critical inputs.
+- Any probabilistic standalone multiplier records an uptime-independence assumption against the
+  crit/vulnerable branches; multiple such sources also assume mutual independence. Use fixed
+  scenarios, explicit joint states, or bounds when that assumption is not defensible.
 - Use one ledger per scenario and damage event.
 - `ruleset`, `scenario`, and `event` are required. `weapon_damage` is the canonical source field;
-  the legacy `base_damage` alias is accepted only for existing ledgers.
+  `base_damage` is accepted only by explicitly legacy ledgers.
 - Set `eligible` to `false` when an independent, critical, or vulnerable condition cannot legally
   occur. Zero uptime/chance is treated as ineligible for the theoretical ceiling.
 - Derive theoretical single-hit from the same legal sources at full coverage; do not add repeat attacks.

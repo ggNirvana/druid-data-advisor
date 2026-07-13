@@ -21,7 +21,10 @@ the installed Skill launcher:
 
 1. Run `version status` before damage analysis.
 2. Reuse the locked ruleset while `refresh_required` is false; do not browse again.
-3. When it is true or the screenshot build disagrees, refresh from official Blizzard sources and the matching d4data build before calculating.
+3. When it is true or the screenshot build disagrees, refresh from official Blizzard sources and
+   the matching `DiabloTools/d4data` branch/build. Use current in-game tooltip/controlled-dummy
+   evidence for mechanics neither source publishes; do not depend on the retired `d4data.com`
+   domain.
 4. Load `data/reference/fixed-build.json`. Keep `bd=1ZsP&var=9` fixed unless the user explicitly changes the build.
 
 ## Ingest inputs
@@ -53,7 +56,23 @@ the installed Skill launcher:
 
 ### Compare equipment
 
-Read [references/model-contract.md](references/model-contract.md). Build A and B ledgers from the same character baseline, removing A before adding B. Include steady combat, full-buff boss, expected damage per Shred cast, sustained DPS when rotation inputs exist, and physical/elemental EHP.
+Read [references/model-contract.md](references/model-contract.md) and
+[../../docs/season13-damage-formula.md](../../docs/season13-damage-formula.md). Build A and B
+`season13-buckets-v1` ledgers from the same character baseline, removing A before adding B. Include
+steady combat, full-buff boss, expected damage per Shred cast, sustained DPS when rotation inputs
+exist, and physical/elemental EHP.
+
+Never multiply every displayed `x%` affix independently. First add Critical Strike Damage
+Multiplier affixes into the critical bucket, Vulnerable Damage Multiplier affixes into the
+vulnerable bucket, and All/eligible physical-or-elemental/weapon-gem multipliers into the all-damage
+bucket. Only a source verified as a standalone power belongs in `standalone_multipliers`. The
+replacement ratio for one bucket is `(current_factor - old_bonus + new_bonus) / current_factor`;
+this is the required same-bucket dilution calculation.
+
+Do not feed the character panel's top composite Critical/Vulnerable/element damage display into the
+additive pool. Use the hover tooltip's bottom item/Paragon additive value. When that value is absent,
+calculate only a fixed branch or A/B ratio where it cancels, or report a formula/bound instead of a
+single expected-damage percentage.
 
 Run `calc compare --input FILE`. Interpret breakpoints and survivability; the script supplies arithmetic, not the final recommendation. If missing attack-speed, cooldown, resource, armor, resistance, or life data can flip the winner, request only those fields.
 
@@ -114,6 +133,9 @@ link to that page after an authorized profile update.
 
 Follow [references/report-contract.md](references/report-contract.md). Always state ruleset, scenario, source inputs, exact absolute/percentage deltas, and confidence. “Exact” means reproducible within the declared model. Use bounds for hidden or uncalibrated mechanics; never invent a single value.
 
-Convert displayed percentage multipliers at the input boundary: `x18%` becomes the total factor
-`1.18`. Never pass the displayed `18` as a factor. Preserve the displayed roll and converted factor
-in the report so the arithmetic is auditable.
+Convert displayed percentages according to their verified role. A same-bucket affix such as
+`x18% 易伤伤害增倍` becomes `bonus: 0.18`; the complete bucket factor is calculated once as
+`1 + sum(bonuses)`. A verified standalone `18%[x]` power becomes the total factor `1.18`. Never pass
+the displayed `18` as either value. Preserve the displayed roll, bucket/standalone classification,
+and converted value in the report so the arithmetic is auditable. Unknown `x%` semantics remain
+unknown; do not default them to standalone multiplication.

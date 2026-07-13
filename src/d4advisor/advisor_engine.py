@@ -5,7 +5,13 @@ import math
 import re
 from typing import Any
 
-from .calculations import effective_health, expected_chained_attacks, stack_damage_reductions
+from .calculations import (
+    effective_health,
+    expected_chained_attacks,
+    multiplier_bucket_factor,
+    season13_damage_branch,
+    stack_damage_reductions,
+)
 
 
 def _finite_number(value: Any, name: str, *, minimum: float | None = None) -> float:
@@ -39,8 +45,8 @@ def _boolean(value: Any, name: str) -> bool:
     return value
 
 
-def calculate_damage_event(ledger: dict[str, Any]) -> dict[str, Any]:
-    """Reduce one versioned damage ledger into deterministic damage metrics."""
+def _calculate_legacy_damage_event(ledger: dict[str, Any]) -> dict[str, Any]:
+    """Preserve the pre-bucket approximation only for explicitly legacy ledgers."""
     ruleset = _required_text(ledger, "ruleset")
     scenario = _required_text(ledger, "scenario")
     event = _required_text(ledger, "event")
@@ -163,6 +169,12 @@ def calculate_damage_event(ledger: dict[str, Any]) -> dict[str, Any]:
     )
 
     return {
+        "damage_model": "legacy-independent-v0",
+        "precision": "legacy_approximation",
+        "warnings": [
+            "legacy-independent-v0 cannot represent Season 13 same-bucket dilution or "
+            "crit/vulnerable-only additive damage"
+        ],
         "ruleset": ruleset,
         "scenario": scenario,
         "event": event,
@@ -208,6 +220,489 @@ def calculate_damage_event(ledger: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+_SEASON13_BUCKETS = (
+    "all_damage",
+    "critical_strike",
+    "vulnerable",
+    "damage_over_time",
+)
+
+
+def _season13_multiplier_buckets(
+    ledger: dict[str, Any], confidences: list[float]
+) -> tuple[dict[str, float], list[dict[str, Any]]]:
+    raw_buckets = ledger.get("multiplier_buckets")
+    if not isinstance(raw_buckets, dict):
+        raise ValueError("multiplier_buckets must be an object")
+    unknown = sorted(set(raw_buckets) - set(_SEASON13_BUCKETS))
+    if unknown:
+        raise ValueError(f"unknown Season 13 multiplier bucket(s): {', '.join(unknown)}")
+
+    totals: dict[str, float] = {}
+    breakdown: list[dict[str, Any]] = []
+    source_ids: set[str] = set()
+    for bucket_name in _SEASON13_BUCKETS:
+        sources = raw_buckets.get(bucket_name, [])
+        if not isinstance(sources, list):
+            raise ValueError(f"multiplier_buckets.{bucket_name} must be an array")
+        total = 0.0
+        normalized_sources = []
+        for index, source in enumerate(sources):
+            if not isinstance(source, dict):
+                raise ValueError(
+                    f"multiplier_buckets.{bucket_name}[{index}] must be an object"
+                )
+            source_id = _required_text(source, "id")
+            if source_id in source_ids:
+                raise ValueError(f"duplicate multiplier bucket source id: {source_id}")
+            source_ids.add(source_id)
+            bonus = _finite_number(
+                source.get("bonus"),
+                f"multiplier_buckets.{bucket_name}[{index}].bonus",
+                minimum=-1,
+            )
+            confidence = _probability(
+                source.get("confidence", 1),
+                f"multiplier_buckets.{bucket_name}[{index}].confidence",
+            )
+            active = _boolean(
+                source.get("active", True),
+                f"multiplier_buckets.{bucket_name}[{index}].active",
+            )
+            eligible = _boolean(
+                source.get("eligible", True),
+                f"multiplier_buckets.{bucket_name}[{index}].eligible",
+            )
+            included = active and eligible
+            if included:
+                total += bonus
+                confidences.append(confidence)
+            normalized_sources.append(
+                {
+                    "id": source_id,
+                    "bonus": bonus,
+                    "confidence": confidence,
+                    "active": active,
+                    "eligible": eligible,
+                    "included": included,
+                }
+            )
+        factor = multiplier_bucket_factor((total,))
+        totals[bucket_name] = total
+        breakdown.append(
+            {
+                "id": bucket_name,
+                "bonus": total,
+                "factor": factor,
+                "sources": normalized_sources,
+            }
+        )
+    return totals, breakdown
+
+
+def _season13_standalone_multipliers(
+    ledger: dict[str, Any], confidences: list[float]
+) -> tuple[float, float, list[dict[str, Any]], bool]:
+    if "multipliers" in ledger:
+        raise ValueError(
+            "season13-buckets-v1 uses standalone_multipliers; ambiguous multipliers are rejected"
+        )
+    sources = ledger.get("standalone_multipliers", [])
+    if not isinstance(sources, list):
+        raise ValueError("standalone_multipliers must be an array")
+    expected_product = 1.0
+    ceiling_product = 1.0
+    breakdown = []
+    source_ids: set[str] = set()
+    probabilistic_count = 0
+    for index, source in enumerate(sources):
+        if not isinstance(source, dict):
+            raise ValueError(f"standalone_multipliers[{index}] must be an object")
+        source_id = _required_text(source, "id")
+        if source_id in source_ids:
+            raise ValueError(f"duplicate standalone multiplier id: {source_id}")
+        source_ids.add(source_id)
+        factor = _finite_number(
+            source.get("factor"), f"standalone_multipliers[{index}].factor", minimum=0
+        )
+        uptime = _probability(
+            source.get("uptime", 1), f"standalone_multipliers[{index}].uptime"
+        )
+        confidence = _probability(
+            source.get("confidence", 1),
+            f"standalone_multipliers[{index}].confidence",
+        )
+        active = _boolean(
+            source.get("active", True), f"standalone_multipliers[{index}].active"
+        )
+        eligible = _boolean(
+            source.get("eligible", uptime > 0),
+            f"standalone_multipliers[{index}].eligible",
+        ) and uptime > 0
+        expected_factor = 1 + uptime * (factor - 1) if active and eligible else 1.0
+        ceiling_factor = factor if active and eligible else 1.0
+        expected_product *= expected_factor
+        ceiling_product *= ceiling_factor
+        if active and eligible:
+            confidences.append(confidence)
+            if 0 < uptime < 1:
+                probabilistic_count += 1
+        breakdown.append(
+            {
+                "id": source_id,
+                "factor": factor,
+                "uptime": uptime,
+                "confidence": confidence,
+                "active": active,
+                "eligible": eligible,
+                "expected_factor": expected_factor,
+                "ceiling_factor": ceiling_factor,
+            }
+        )
+    return expected_product, ceiling_product, breakdown, probabilistic_count > 0
+
+
+def _joint_direct_probabilities(
+    ledger: dict[str, Any], *, crit_chance: float, vulnerable_uptime: float
+) -> tuple[dict[str, float], str]:
+    raw = ledger.get("joint_probabilities")
+    keys = (
+        "noncrit_nonvulnerable",
+        "crit_nonvulnerable",
+        "noncrit_vulnerable",
+        "crit_vulnerable",
+    )
+    if raw is None:
+        probability_model = (
+            "crit_vulnerable_independence"
+            if 0 < crit_chance < 1 and 0 < vulnerable_uptime < 1
+            else "marginals_without_correlation_ambiguity"
+        )
+        return (
+            {
+                "noncrit_nonvulnerable": (1 - crit_chance) * (1 - vulnerable_uptime),
+                "crit_nonvulnerable": crit_chance * (1 - vulnerable_uptime),
+                "noncrit_vulnerable": (1 - crit_chance) * vulnerable_uptime,
+                "crit_vulnerable": crit_chance * vulnerable_uptime,
+            },
+            probability_model,
+        )
+    if not isinstance(raw, dict) or set(raw) != set(keys):
+        raise ValueError(f"joint_probabilities must contain exactly: {', '.join(keys)}")
+    probabilities = {
+        key: _probability(raw[key], f"joint_probabilities.{key}") for key in keys
+    }
+    if not math.isclose(math.fsum(probabilities.values()), 1.0, abs_tol=1e-9):
+        raise ValueError("joint_probabilities must sum to 1")
+    observed_crit = probabilities["crit_nonvulnerable"] + probabilities["crit_vulnerable"]
+    observed_vulnerable = (
+        probabilities["noncrit_vulnerable"] + probabilities["crit_vulnerable"]
+    )
+    if not math.isclose(observed_crit, crit_chance, abs_tol=1e-9):
+        raise ValueError("joint_probabilities do not match crit.chance")
+    if not math.isclose(observed_vulnerable, vulnerable_uptime, abs_tol=1e-9):
+        raise ValueError("joint_probabilities do not match vulnerable.uptime")
+    return probabilities, "explicit_joint_probabilities"
+
+
+def _calculate_season13_damage_event(ledger: dict[str, Any]) -> dict[str, Any]:
+    ruleset = _required_text(ledger, "ruleset")
+    scenario = _required_text(ledger, "scenario")
+    event = _required_text(ledger, "event")
+    damage_kind = ledger.get("damage_kind", "direct")
+    if damage_kind not in {"direct", "dot"}:
+        raise ValueError("damage_kind must be direct or dot")
+
+    weapon_damage = _finite_number(
+        ledger.get("weapon_damage"), "weapon_damage", minimum=0
+    )
+    coefficient = _finite_number(
+        ledger.get("skill_coefficient"), "skill_coefficient", minimum=0
+    )
+    enemy_damage_factor = _finite_number(
+        ledger.get("enemy_damage_factor"), "enemy_damage_factor", minimum=0
+    )
+    main_stat_input = ledger.get("main_stat")
+    if not isinstance(main_stat_input, dict):
+        raise ValueError("main_stat must be an object with value and divisor")
+    main_stat = _finite_number(main_stat_input.get("value"), "main_stat.value", minimum=0)
+    main_stat_divisor = _finite_number(
+        main_stat_input.get("divisor"), "main_stat.divisor", minimum=0
+    )
+    if main_stat_divisor == 0:
+        raise ValueError("main_stat.divisor must be greater than zero")
+    main_stat_factor = 1 + main_stat / main_stat_divisor
+
+    additive_input = ledger.get("additive")
+    if not isinstance(additive_input, dict):
+        raise ValueError("additive must be an object")
+    additive = {
+        key: _finite_number(additive_input.get(key, 0), f"additive.{key}", minimum=-1)
+        for key in ("always", "crit_only", "vulnerable_only", "dot_only")
+    }
+    if any(value < 0 for key, value in additive.items() if key != "always"):
+        raise ValueError("conditional additive bonuses must be non-negative")
+
+    ledger_confidence = _probability(ledger.get("confidence", 1), "confidence")
+    confidences = [ledger_confidence]
+    bucket_totals, bucket_breakdown = _season13_multiplier_buckets(ledger, confidences)
+    (
+        expected_independent_factor,
+        ceiling_independent_factor,
+        factor_breakdown,
+        assumes_independent_standalone_uptimes,
+    ) = _season13_standalone_multipliers(ledger, confidences)
+
+    crit_input = ledger.get("crit", {})
+    if not isinstance(crit_input, dict):
+        raise ValueError("crit must be an object")
+    crit_chance = _probability(crit_input.get("chance", 0), "crit.chance")
+    crit_base_factor = _finite_number(
+        crit_input.get("base_factor"), "crit.base_factor", minimum=0
+    )
+    crit_eligible = _boolean(
+        crit_input.get("eligible", crit_chance > 0), "crit.eligible"
+    ) and crit_chance > 0
+    crit_confidence = _probability(crit_input.get("confidence", 1), "crit.confidence")
+    confidences.append(crit_confidence)
+    if not crit_eligible and crit_chance != 0:
+        raise ValueError("crit.chance must be 0 when crit is ineligible")
+
+    vulnerable_input = ledger.get("vulnerable", {})
+    if not isinstance(vulnerable_input, dict):
+        raise ValueError("vulnerable must be an object")
+    vulnerable_uptime = _probability(
+        vulnerable_input.get("uptime", 0), "vulnerable.uptime"
+    )
+    vulnerable_base_factor = _finite_number(
+        vulnerable_input.get("base_factor"), "vulnerable.base_factor", minimum=0
+    )
+    vulnerable_eligible = _boolean(
+        vulnerable_input.get("eligible", vulnerable_uptime > 0), "vulnerable.eligible"
+    ) and vulnerable_uptime > 0
+    vulnerable_confidence = _probability(
+        vulnerable_input.get("confidence", 1), "vulnerable.confidence"
+    )
+    confidences.append(vulnerable_confidence)
+    if not vulnerable_eligible and vulnerable_uptime != 0:
+        raise ValueError("vulnerable.uptime must be 0 when vulnerable is ineligible")
+
+    if damage_kind == "dot":
+        if crit_chance or bucket_totals["critical_strike"] or additive["crit_only"]:
+            raise ValueError("DoT ledgers cannot contain active critical damage inputs")
+    elif bucket_totals["damage_over_time"] or additive["dot_only"]:
+        raise ValueError("direct-hit ledgers cannot contain active damage-over-time inputs")
+
+    assumptions = []
+    branches = []
+    if damage_kind == "direct":
+        probabilities, probability_model = _joint_direct_probabilities(
+            ledger,
+            crit_chance=crit_chance,
+            vulnerable_uptime=vulnerable_uptime,
+        )
+        if probability_model == "crit_vulnerable_independence":
+            assumptions.append(probability_model)
+        branch_states = (
+            ("noncrit_nonvulnerable", False, False),
+            ("crit_nonvulnerable", True, False),
+            ("noncrit_vulnerable", False, True),
+            ("crit_vulnerable", True, True),
+        )
+    else:
+        if "joint_probabilities" in ledger:
+            raise ValueError("DoT ledgers do not use joint_probabilities")
+        probabilities = {
+            "dot_nonvulnerable": 1 - vulnerable_uptime,
+            "dot_vulnerable": vulnerable_uptime,
+        }
+        probability_model = "vulnerable_marginal"
+        branch_states = (
+            ("dot_nonvulnerable", False, False),
+            ("dot_vulnerable", False, True),
+        )
+
+    for branch_id, is_critical, is_vulnerable in branch_states:
+        branch_additive = (
+            additive["always"]
+            + (additive["crit_only"] if is_critical else 0)
+            + (additive["vulnerable_only"] if is_vulnerable else 0)
+            + (additive["dot_only"] if damage_kind == "dot" else 0)
+        )
+        damage = season13_damage_branch(
+            weapon_damage=weapon_damage,
+            skill_coefficient=coefficient,
+            main_stat=main_stat,
+            main_stat_divisor=main_stat_divisor,
+            additive_bonus=branch_additive,
+            all_damage_bucket_bonus=bucket_totals["all_damage"],
+            independent_multipliers=(expected_independent_factor,),
+            enemy_damage_factor=enemy_damage_factor,
+            is_critical=is_critical,
+            critical_base_factor=crit_base_factor,
+            critical_bucket_bonus=bucket_totals["critical_strike"],
+            is_vulnerable=is_vulnerable,
+            vulnerable_base_factor=vulnerable_base_factor,
+            vulnerable_bucket_bonus=bucket_totals["vulnerable"],
+            is_dot=damage_kind == "dot",
+            dot_bucket_bonus=bucket_totals["damage_over_time"],
+        )
+        branches.append(
+            {
+                "id": branch_id,
+                "probability": probabilities[branch_id],
+                "is_critical": is_critical,
+                "is_vulnerable": is_vulnerable,
+                "additive_bonus": branch_additive,
+                "damage": damage,
+            }
+        )
+
+    expected_single_hit = _finite_number(
+        math.fsum(branch["probability"] * branch["damage"] for branch in branches),
+        "calculated expected_single_hit",
+        minimum=0,
+    )
+    ceiling_is_critical = damage_kind == "direct" and crit_eligible
+    ceiling_is_vulnerable = vulnerable_eligible
+    ceiling_additive = (
+        additive["always"]
+        + (additive["crit_only"] if ceiling_is_critical else 0)
+        + (additive["vulnerable_only"] if ceiling_is_vulnerable else 0)
+        + (additive["dot_only"] if damage_kind == "dot" else 0)
+    )
+    theoretical_single_hit = season13_damage_branch(
+        weapon_damage=weapon_damage,
+        skill_coefficient=coefficient,
+        main_stat=main_stat,
+        main_stat_divisor=main_stat_divisor,
+        additive_bonus=ceiling_additive,
+        all_damage_bucket_bonus=bucket_totals["all_damage"],
+        independent_multipliers=(ceiling_independent_factor,),
+        enemy_damage_factor=enemy_damage_factor,
+        is_critical=ceiling_is_critical,
+        critical_base_factor=crit_base_factor,
+        critical_bucket_bonus=bucket_totals["critical_strike"],
+        is_vulnerable=ceiling_is_vulnerable,
+        vulnerable_base_factor=vulnerable_base_factor,
+        vulnerable_bucket_bonus=bucket_totals["vulnerable"],
+        is_dot=damage_kind == "dot",
+        dot_bucket_bonus=bucket_totals["damage_over_time"],
+    )
+
+    if assumes_independent_standalone_uptimes:
+        assumptions.append("standalone_multiplier_uptime_independence")
+    repeat = ledger.get("repeat", {})
+    if not isinstance(repeat, dict):
+        raise ValueError("repeat must be an object")
+    repeat_probability = _probability(repeat.get("probability", 0), "repeat.probability")
+    max_extra_attacks = repeat.get("max_extra_attacks", 0)
+    if (
+        isinstance(max_extra_attacks, bool)
+        or not isinstance(max_extra_attacks, int)
+        or max_extra_attacks < 0
+    ):
+        raise ValueError("repeat.max_extra_attacks must be a non-negative integer")
+    repeat_confidence = _probability(repeat.get("confidence", 1), "repeat.confidence")
+    confidences.append(repeat_confidence)
+    expected_attacks = expected_chained_attacks(repeat_probability, max_extra_attacks)
+    casts_per_second = _finite_number(
+        ledger.get("casts_per_second", 0), "casts_per_second", minimum=0
+    )
+    resource_uptime = _probability(ledger.get("resource_uptime", 1), "resource_uptime")
+    expected_per_cast = expected_single_hit * expected_attacks
+    sustained_dps = expected_per_cast * casts_per_second * resource_uptime
+    base_hit = weapon_damage * coefficient * main_stat_factor * enemy_damage_factor
+
+    expected_crit_factor = (
+        1
+        + crit_chance
+        * (
+            crit_base_factor
+            * multiplier_bucket_factor((bucket_totals["critical_strike"],))
+            - 1
+        )
+        if damage_kind == "direct"
+        else 1.0
+    )
+    expected_vulnerable_factor = 1 + vulnerable_uptime * (
+        vulnerable_base_factor
+        * multiplier_bucket_factor((bucket_totals["vulnerable"],))
+        - 1
+    )
+    return {
+        "damage_model": "season13-buckets-v1",
+        "precision": (
+            "conditional_expectation_with_declared_independence"
+            if assumptions
+            else "branch_exact_for_declared_inputs"
+        ),
+        "ruleset": ruleset,
+        "scenario": scenario,
+        "event": event,
+        "damage_kind": damage_kind,
+        "base_hit": base_hit,
+        "expected_single_hit": expected_single_hit,
+        "theoretical_single_hit": theoretical_single_hit,
+        "expected_attacks_per_cast": expected_attacks,
+        "expected_damage_per_cast": expected_per_cast,
+        "sustained_dps": sustained_dps,
+        "expected_independent_factor": expected_independent_factor,
+        "ceiling_independent_factor": ceiling_independent_factor,
+        "expected_crit_factor": expected_crit_factor,
+        "expected_vulnerable_factor": expected_vulnerable_factor,
+        "factor_breakdown": factor_breakdown,
+        "bucket_breakdown": bucket_breakdown,
+        "branches": branches,
+        "probability_model": probability_model,
+        "assumptions": assumptions,
+        "warnings": [],
+        "inputs": {
+            "weapon_damage": weapon_damage,
+            "skill_coefficient": coefficient,
+            "main_stat": {"value": main_stat, "divisor": main_stat_divisor},
+            "main_stat_factor": main_stat_factor,
+            "enemy_damage_factor": enemy_damage_factor,
+            "additive": additive,
+            "multiplier_buckets": bucket_breakdown,
+            "standalone_multipliers": factor_breakdown,
+            "crit": {
+                "chance": crit_chance,
+                "base_factor": crit_base_factor,
+                "eligible": crit_eligible,
+                "confidence": crit_confidence,
+            },
+            "vulnerable": {
+                "uptime": vulnerable_uptime,
+                "base_factor": vulnerable_base_factor,
+                "eligible": vulnerable_eligible,
+                "confidence": vulnerable_confidence,
+            },
+            "repeat": {
+                "probability": repeat_probability,
+                "max_extra_attacks": max_extra_attacks,
+                "confidence": repeat_confidence,
+            },
+            "casts_per_second": casts_per_second,
+            "resource_uptime": resource_uptime,
+            "confidence": ledger_confidence,
+        },
+        "confidence": min(confidences),
+    }
+
+
+def calculate_damage_event(ledger: dict[str, Any]) -> dict[str, Any]:
+    """Reduce one versioned damage ledger with an explicitly selected model."""
+    damage_model = ledger.get("damage_model")
+    if damage_model == "season13-buckets-v1":
+        return _calculate_season13_damage_event(ledger)
+    if damage_model == "legacy-independent-v0":
+        return _calculate_legacy_damage_event(ledger)
+    raise ValueError(
+        "damage_model is required; use season13-buckets-v1 for current calculations"
+    )
+
+
 def _delta(before: float, after: float) -> dict[str, float | None]:
     absolute = after - before
     return {
@@ -247,6 +742,22 @@ def _relative_changes(
 
 def _component_factors(result: dict[str, Any]) -> dict[str, float]:
     inputs = result["inputs"]
+    if result.get("damage_model") == "season13-buckets-v1":
+        bucket_factors = {
+            f"bucket:{bucket['id']}": bucket["factor"]
+            for bucket in result["bucket_breakdown"]
+        }
+        return {
+            "weapon_damage": inputs["weapon_damage"],
+            "skill_coefficient": inputs["skill_coefficient"],
+            "main_stat_factor": inputs["main_stat_factor"],
+            "enemy_damage_factor": inputs["enemy_damage_factor"],
+            **bucket_factors,
+            "independent_factor": result["expected_independent_factor"],
+            "attacks_per_cast": result["expected_attacks_per_cast"],
+            "casts_per_second": inputs["casts_per_second"],
+            "resource_uptime": inputs["resource_uptime"],
+        }
     return {
         "weapon_damage": inputs["weapon_damage"],
         "skill_coefficient": inputs["skill_coefficient"],
@@ -291,13 +802,21 @@ def compare_loadouts(payload: dict[str, Any]) -> dict[str, Any]:
         "sustained_dps",
     )
     for scenario_name, pair in payload.get("scenarios", {}).items():
-        for context_field in ("ruleset", "scenario", "event"):
+        for context_field in ("damage_model", "ruleset", "scenario", "event", "damage_kind"):
             if pair["a"].get(context_field) != pair["b"].get(context_field):
                 raise ValueError(f"A/B must use the same {context_field}")
         a_result = calculate_damage_event(pair["a"])
         b_result = calculate_damage_event(pair["b"])
-        a_factors = {item["id"]: item["expected_factor"] for item in a_result["factor_breakdown"]}
-        b_factors = {item["id"]: item["expected_factor"] for item in b_result["factor_breakdown"]}
+        a_factors = {
+            item["id"]: item["expected_factor"] for item in a_result["factor_breakdown"]
+        }
+        b_factors = {
+            item["id"]: item["expected_factor"] for item in b_result["factor_breakdown"]
+        }
+        for bucket in a_result.get("bucket_breakdown", []):
+            a_factors[f"bucket:{bucket['id']}"] = bucket["factor"]
+        for bucket in b_result.get("bucket_breakdown", []):
+            b_factors[f"bucket:{bucket['id']}"] = bucket["factor"]
         factor_changes = [
             {
                 "id": change["id"],
