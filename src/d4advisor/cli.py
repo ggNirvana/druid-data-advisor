@@ -106,6 +106,12 @@ def _build_parser() -> argparse.ArgumentParser:
     ocr_text = subcommands.add_parser("ocr-text", help="识别附魔候选等界面原始文本")
     ocr_text.add_argument("image")
     ocr_text.add_argument("--output", "-o", required=True)
+    ocr_text_batch = subcommands.add_parser(
+        "ocr-text-batch", help="复用同一个 OCR 引擎批量识别界面原始文本"
+    )
+    ocr_text_batch.add_argument("images", nargs="+")
+    ocr_text_batch.add_argument("--output-dir", required=True)
+    ocr_text_batch.add_argument("--manifest")
 
     profile = subcommands.add_parser("profile", help="维护用户角色快照")
     profile_commands = profile.add_subparsers(dest="profile_command", required=True)
@@ -291,6 +297,49 @@ def main(argv: list[str] | None = None) -> int:
             "ocr": metadata,
         }
         _emit_json(result, args.output)
+        return 0
+
+    if args.command == "ocr-text-batch":
+        engine = create_ocr_engine()
+        output_dir = Path(args.output_dir)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        entries: list[dict[str, Any]] = []
+
+        for index, image_name in enumerate(args.images, start=1):
+            image_path = Path(image_name)
+            lines, metadata = recognize_item_image(image_path, engine=engine)
+            result = {
+                "source_image": image_path.name,
+                "lines": [
+                    {
+                        "text": line.text,
+                        "confidence": line.confidence,
+                        "box": line.box,
+                        "in_item_panel": line.in_item_panel,
+                    }
+                    for line in lines
+                ],
+                "ocr": metadata,
+            }
+            output_path = output_dir / f"panel-{index:02d}.json"
+            _write_json_text(output_path, _encode_json(result))
+            entries.append(
+                {
+                    "source_image": image_path.name,
+                    "ocr_json": output_path.name,
+                    "line_count": len(lines),
+                }
+            )
+
+        manifest = {
+            "schema_version": 1,
+            "images": len(entries),
+            "items": entries,
+        }
+        manifest_path = (
+            Path(args.manifest) if args.manifest else output_dir / "batch-manifest.json"
+        )
+        _emit_json(manifest, str(manifest_path))
         return 0
 
     if args.command == "profile":

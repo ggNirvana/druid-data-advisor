@@ -148,11 +148,20 @@ Pass `stats` and scenario-specific `rules` to `calc audit-panel`:
   "ruleset": "3.1.0.72592",
   "scenario": "高层常态",
   "confidence": 0.9,
-  "stats": {"crit_chance": 0.92, "armor": 9000},
+  "stats": {
+    "crit_chance": 0.92,
+    "armor": 19296,
+    "armor_damage_reduction": 0.712
+  },
   "rules": {
     "metrics": {
       "crit_chance": {"target": 0.9, "cap": 1.0, "priority": 2, "category": "offense"},
-      "armor": {"target": 10000, "priority": 3, "category": "survival"}
+      "armor_damage_reduction": {
+        "target": 0.8,
+        "cap": 0.9,
+        "priority": 3,
+        "category": "survival"
+      }
     },
     "marginal_options": [
       {"id": "vulnerable", "current_factor": 1.5, "new_factor": 1.68}
@@ -162,6 +171,12 @@ Pass `stats` and scenario-specific `rules` to `calc audit-panel`:
 ```
 
 Derive targets from the locked ruleset and chosen combat scenario. Do not treat a generic target as a universal cap. The calculator returns a dimensionless relative gap times the declared priority; use it as an audit ordering aid, not as a universal damage/survival score. Put attack-speed, cooldown, or resource thresholds under `rules.breakpoints`; an option may provide `projected_stats` to expose whether it crosses a tier.
+
+Armor is a diminishing-returns rating in the current ruleset. Preserve the displayed armor rating as
+evidence, but audit the resulting displayed damage reduction against its 90% cap. Never substitute a
+fixed rating such as 10,000 for the cap. A projected armor change needs a matching ruleset conversion
+curve or a new in-game tooltip observation before converting rating into damage reduction. The cap is
+not automatically the target; derive the target from the declared scenario.
 
 `marginal_options.current_factor/new_factor` must describe the complete before/after outcome after
 the replaced affix is removed, so their ratio includes opportunity cost. They are total output

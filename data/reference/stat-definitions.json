@@ -21,6 +21,16 @@
       "default_operator": "add",
       "default_unit": "flat"
     },
+    "armor_damage_reduction": {
+      "aliases_zh_cn": ["护甲减伤", "护甲提供的伤害减免", "受到的伤害降低"],
+      "default_operator": "add",
+      "default_unit": "ratio"
+    },
+    "armor_damage_reduction_cap": {
+      "aliases_zh_cn": ["护甲减伤上限", "物理抗性提供的伤害减免上限"],
+      "default_operator": "cap",
+      "default_unit": "ratio"
+    },
     "attack_speed_bonus": {
       "aliases_zh_cn": ["攻击速度", "攻速"],
       "default_operator": "add",

@@ -54,6 +54,16 @@ scripts/d4advisor profile set-item \
   --source-image /绝对路径/装备截图.png
 ```
 
+多张属性面板或秘术师列表使用通用批量文字模式，同一批只初始化一次 OCR 引擎：
+
+```bash
+scripts/d4advisor ocr-text-batch /绝对路径/面板*.png \
+  --output-dir data/inbox/panel-ocr
+```
+
+护甲与抗性在当前规则中是递减收益评级。档案分别保存护甲评级、面板显示的减伤和 90%
+减伤上限；不会再把 10,000 或其他固定护甲评级当成通用上限。
+
 ## 角色数据维护
 
 ```bash

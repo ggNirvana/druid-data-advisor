@@ -44,8 +44,10 @@ the installed Skill launcher:
    rerun with `--equip --require-complete`; this validates every item first and writes all slots in
    one atomic profile update. Do not use `--allow-review` unless the blocking fields were checked.
 4. Use single-image `ocr IMAGE --output FILE` only for incremental candidates or targeted retries.
-5. Reuse `data/user/current.json`. Ask only for fields whose uncertainty could reverse the result.
-6. Never substitute planner-perfect rolls for the user's actual values.
+5. For multiple character-panel or Occultist screenshots, run `ocr-text-batch IMAGE... --output-dir
+   DIR`. Inspect the JSON text before any image. Reuse `ocr-text` only for one targeted retry.
+6. Reuse `data/user/current.json`. Ask only for fields whose uncertainty could reverse the result.
+7. Never substitute planner-perfect rolls for the user's actual values.
 
 ## Choose the workflow
 
@@ -69,6 +71,13 @@ Keep `expected_damage_per_cast` separate. Never present Waxing Gibbous repeated 
 ### Audit a character panel
 
 Construct version- and scenario-specific targets, then run `calc audit-panel --input FILE`. Rank objective gaps, overcaps, breakpoints, and marginal factor gains. Apply judgement to recommend the top three weaknesses, tempering, and masterworking targets. Give both damage-first and high-tier-survival paths; prefer survival when damage already exceeds the survivable ceiling.
+
+Treat armor and resistances as diminishing-returns ratings in the current ruleset. Store the raw
+rating and the in-game tooltip's resulting reduction separately. Audit `armor_damage_reduction`
+against the displayed 90% cap; never use 10,000 or another fixed armor rating as a universal cap.
+Do not automatically treat the cap as the build target. Derive a scenario target separately, and do
+not project rating changes into reduction without a matching ruleset conversion curve or a new
+in-game tooltip observation.
 
 ### Recommend equipment enchantments
 
